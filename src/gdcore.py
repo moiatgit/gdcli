@@ -38,11 +38,11 @@ def get_driver():
     """ returns a driver connected to the service
         It has into account the settings in GDConfig """
     config = GDConfig()
-    drive = authenticate(
+    driver = authenticate(
         config['token_path'],
         config['client_secrets_path'],
         config['scopes'])
-    return drive
+    return driver
 
 
 if __name__ == "__main__":

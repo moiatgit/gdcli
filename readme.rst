@@ -17,6 +17,21 @@ Since this project is on development, the following list of commands is probably
 incomplete and/or imprecise. However, I think it could give you an idea of what
 I'm trying to develop.
 
+Start
+-----
+
+Check whether your installation is successfully configured
+
+::
+
+    $ python3 gdcli_start.py
+
+    Google Drive CLI: initial configuration utility
+
+    Congratulations. Your Google Drive CLI is ready for use
+    Tip: to continue consider getting some help
+    $ gdcli help
+
 About
 -----
 
