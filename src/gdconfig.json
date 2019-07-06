@@ -1,0 +1,7 @@
+{
+    "client_secrets_path": "~/.gosync/client_secrets.json",
+    "token_path": "~/.gosync/token.json",
+    "scopes": "https://www.googleapis.com/auth/drive",
+    "gd_db_path": "~/.gosync/db",
+    "local_mirror_path": "~/googledrive"
+}
