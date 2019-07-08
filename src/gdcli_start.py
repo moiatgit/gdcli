@@ -34,8 +34,10 @@ def print_error_and_exit(msg):
     sys.exit(1)
 
 
-def main():
-    """ checks that everything is ok to run the app """
+def do_start(argv):
+    """ checks that everything is ok to run the app.
+        @param argv: a list of str arguments (ignored in this version)
+    """
 
     print('Google Drive CLI: initial configuration utility\n')
 
@@ -97,6 +99,10 @@ def main():
     print(('Congratulations. Your Google Drive CLI is ready for use\n'
            'Tip: to continue consider getting some help\n'
            '$ gdcli help\n'))
+
+def main():
+    """ performs the interactive task of this module """
+    do_start(sys.argv[1:])
 
 if __name__ == '__main__':
     main()

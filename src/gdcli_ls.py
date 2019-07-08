@@ -6,9 +6,11 @@
     This script shows the files in the driver
 """
 
+import sys
+import json
+
 from gdcore import get_driver
 
-import json
 
 _MIMETYPE_TO_EXTENSION_MAPPINGS = {
     'application/msword': 'msword',
@@ -45,16 +47,18 @@ def print_files(files):
         print_file(item)
     print('\ntotal files: %s' % len(files['files']))
 
-def main():
-    """ performs the interactive task of this module
-        i.e. it shows the list of files in the specified directory
-    """
+def do_ls(argv):
+    """ lists contents in Google Drive
+        @param argv: a list of str arguments (ignored in this version) """
     driver = get_driver()
     files = get_list(driver, '0BwqRFv-dLVHBLXoyVjdIUjZMZ28')
     print(json.dumps(files))
     print("XXXXXX")
     print_files(files)
 
+def main():
+    """ performs the interactive task of this module """
+    do_ls(sys.argv[1:])
+
 if __name__ == '__main__':
     main()
-

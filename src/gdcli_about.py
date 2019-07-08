@@ -6,6 +6,7 @@
     This script shows the information about the drive
 """
 
+import sys
 from gdcore import get_driver
 
 
@@ -36,6 +37,7 @@ _ABOUT_SPECS = [
 
 
 # XXX consider moving drive calls to gdcore so this script is independent of drive
+
 def get_about(drive):
     """ returns the information about the drive filtered by _ABOUT_SPECS.
         The returning value is a list of dicts as return in compose_values()
@@ -91,12 +93,18 @@ def print_about(values):
         value = prettify_value(item)
         print('%30s: %s' % (item['text'], value))
 
-def main():
-    """ performs the interactive task of this module
-        It shows the about information of the Google Drive """
+def do_about(argv):
+    """ gatters and shows the 'about' information of Google Drive account
+        @param argv: a list of str arguments (ignored in this version)
+    """
     driver = get_driver()
     about = get_about(driver)
     print_about(about)
+
+
+def main():
+    """ performs the interactive task of this module """
+    do_about(sys.argv[1:])
 
 if __name__ == '__main__':
     main()

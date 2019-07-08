@@ -17,6 +17,8 @@ To Do List
 
   start with basic help
 
+- gdcli_pwd
+
 - (done) create gdcli_start.py
 
   It should guide the user to configure the app
@@ -36,6 +38,9 @@ To Do List
 
   it should be able to store current folder somewhere, including the path from
   root (remember this filesystem is not hierarchical)
+
+- add version notice (e.g. gdcli v0.1) it could go in a settings file or
+  similar
 
 - working on gdcli_ls.py
 
