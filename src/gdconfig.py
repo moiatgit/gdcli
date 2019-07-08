@@ -12,14 +12,13 @@ import collections
 import json
 import logging
 
+from gdconstants import _DEFAULT_CONFIG_FILE_PATH, _DEFAULT_ENCODING
+
 
 class GDConfig(collections.UserDict):
     """ This class behaves like a dict() except it is preloaded with configuration
         data.
     """
-
-    _DEFAULT_CONFIG_FILE_PATH = os.path.expanduser('~/.gdcli/gdconfig.json')
-    _DEFAULT_ENCODING = 'utf-8'
 
     def __init__(self,
                  config_path=_DEFAULT_CONFIG_FILE_PATH,
@@ -33,9 +32,9 @@ class GDConfig(collections.UserDict):
         try:
             d = json.loads(contents, encoding=encoding)
         except json.decoder.JSONDecodeError as e:
-            logging.error('Problems trying to decode file %s as json: %s' % (
-                config_path,
-                e))
+            logging.error('Problems trying to decode file %s as json: %s',
+                          config_path,
+                          e)
             d = {}
 
         super().__init__(d)
@@ -46,7 +45,3 @@ class GDConfig(collections.UserDict):
                 self[key] = os.path.expanduser(self[key])
                 if not self[key].startswith('/'):
                     self[key] = os.path.join(os.path.dirname(config_path), self[key])
-
-    def check_ok(self):
-        """ returns true when the contents are the expected ones """
-        return all((k in self) for k in ('client_secrets_path', 'token_path', 'scopes'))

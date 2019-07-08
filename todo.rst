@@ -13,7 +13,7 @@ Currently
 To Do List
 ==========
 
-- create gdcli_help
+- (done) create gdcli_help
 
   start with basic help
 
@@ -73,7 +73,7 @@ To Do List
 
   - upload (upload a file from local filesystem)
 
-- remove redundancy: redefinition of default gdconfig file path in gdcli_start
+- (done) remove redundancy: redefinition of default gdconfig file path in gdcli_start
   and gdconfig
 
 

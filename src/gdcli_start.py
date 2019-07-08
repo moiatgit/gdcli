@@ -12,12 +12,9 @@ import os
 import os.path
 import sys
 
+from gdconstants import _BASE_DIR, _GDCONFIG_FILENAME
 import gdconfig
 from gdcore import get_driver
-
-_BASE_DIR = '~/.gdcli'
-_BASE_DIR_EXPANDED = os.path.expanduser(_BASE_DIR)
-_GDCONFIG_FILENAME = 'gdconfig.json'
 
 _EXPECTED_CONTENTS_IN_GDCONFIG = (
     '\t{\n'
