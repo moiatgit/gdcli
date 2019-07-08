@@ -5,7 +5,7 @@ ToDo List
 Currently
 =========
 
-- converting status pwd to a list from /
+- testing case existing file (not folder) as a step in the path
 
 
 To Do List

@@ -27,7 +27,9 @@ def path_to_gd(path='.'):
         if item == '.':
             continue
         if item == '..':
-            raise 'not supported parent ref yet'
+            if len(gd_ids) > 1:
+                gd_ids.pop()
+            continue
         gd_items = gdcore.get_file(item, folder=gd_ids[-1])
         if not gd_items:
             error_msg = "element not found: %s" % item
