@@ -22,16 +22,24 @@ import gdcore
 import gdstatus
 import gdpath
 
-@pytest.fixture(autouse=True)
-def initial_pwd(monkeypatch):
+@pytest.fixture()
+def initial_pwd_root(monkeypatch):
     contents = {
-        'pwd': '/',
+        'pwd': [ '' ],
         'pwd_id': ['root']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
 
+@pytest.fixture()
+def initial_pwd_non_root(monkeypatch):
+    contents = {
+        'pwd': ['', 'parentfolder', 'currentfolder'],
+        'pwd_id': ['root', 'parentfolderid', 'currentfolderid']
+    }
+    monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
 
-def test_path_root():
+
+def test_path_root(initial_pwd_root):
     given = '/'
     path_id, error_message = gdpath.path_to_gd(given)
     expected_id = 'root'
@@ -39,7 +47,7 @@ def test_path_root():
     assert len(error_message) == 0
 
 
-def test_path_non_existing(monkeypatch):
+def test_path_non_existing(monkeypatch, initial_pwd_root):
     contents = []
 
     def fake_get_file(filename, folder=None):
@@ -56,7 +64,7 @@ def test_path_non_existing(monkeypatch):
     assert expected_msg == error_message
 
 
-def test_path_existent_file_from_root(monkeypatch):
+def test_path_existent_file_from_root(monkeypatch, initial_pwd_root):
     contents = [
         {'name': 'file1', 'id': 'id1',
          'mimeType': 'application/vnd.google-apps.folder'}
@@ -73,3 +81,14 @@ def test_path_existent_file_from_root(monkeypatch):
     expected_msg = ''
     assert expected_id == path_id
     assert expected_msg == error_message
+
+
+def test_path_dot(monkeypatch, initial_pwd_non_root):
+    given = '.'
+    path_id, error_message = gdpath.path_to_gd(given)
+    expected_id = 'currentfolderid'
+    expected_msg = ''
+    assert expected_id == path_id
+    assert expected_msg == error_message
+
+

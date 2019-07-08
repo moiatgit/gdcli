@@ -9,15 +9,16 @@
 
 import sys
 
-from gdstatus import get_status
+import gdstatus
 
 def get_pwd():
     """ returns the current working directory """
-    return get_status()['pwd']
+    pwd_path = gdstatus.get_status()['pwd']
+    return "/".join(pwd_path) if len(pwd_path) > 1 else '/'
 
 def get_pwd_id():
     """ returns the current working directory id """
-    return get_status()['pwd_id'][-1]
+    return gdstatus.get_status()['pwd_id'][-1]
 
 def do_pwd(argv):
     """ shows the current working directory to the standard output

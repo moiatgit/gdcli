@@ -21,7 +21,7 @@ def get_status():
 
     def add_pwd_if_necessary(status):
         if not 'pwd' in status or not 'pwd_id' in status:
-            status['pwd'] = '/'
+            status['pwd'] = ['']
             status['pwd_id'] = ['root']     # it keeps the path to pwd from root, so it can get expected parent
             status.store()
 

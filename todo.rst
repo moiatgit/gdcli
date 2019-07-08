@@ -5,27 +5,7 @@ ToDo List
 Currently
 =========
 
-On path testing
-
-- (fixed) gdcli_ls is broken
-
-  ::
-
-    Traceback (most recent call last):
-      File "gdcli_ls.py", line 58, in <module>
-        main()
-      File "gdcli_ls.py", line 55, in main
-        do_ls(sys.argv[1:])
-      File "gdcli_ls.py", line 48, in do_ls
-        files = get_list(get_pwd())
-      File "/home/moises/dev/gdcli/src/gdcore.py", line 45, in get_list
-        fields=fields
-      File "/home/moises/.local/lib/python3.5/site-packages/googleapiclient/_helpers.py", line 130, in positional_wrapper
-        return wrapped(*args, **kwargs)
-      File "/home/moises/.local/lib/python3.5/site-packages/googleapiclient/http.py", line 851, in execute
-        raise HttpError(resp, content, uri=self.uri)
-    googleapiclient.errors.HttpError: <HttpError 404 when requesting https://www.googleapis.com/drive/v3/files?fields=files%28id%2Cname%2CmimeType%2Csize%2CfileExtension%29&q=%27%2F%27+in+parents+and+trashed%3Dfalse&alt=json returned "File not found: .">
-
+- converting status pwd to a list from /
 
 
 To Do List
