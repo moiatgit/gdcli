@@ -43,19 +43,23 @@ def get_list(folder='root'):
     """
     print("XXX get_list() folder", folder)
     fields = 'files(id,name,mimeType)'
-    return get_driver().files().list(
+    result = get_driver().files().list(
         q="'" + folder + "' in parents and trashed=false",
     ).execute()
+    print("XXX get_list(folder: %s): obtained\n%s" % (folder, result))
+    return result['files'] if 'files' in result else []
 
 
 def get_file(filename, folder='root'):
     """ returns the requested file """
     fields = 'files(id,name,mimeType)'
-    return get_driver().files().list(
+    result = get_driver().files().list(
         q="name='%s' and '%s' in parents and trashed=false" % (filename, folder),
         spaces='drive',
         fields=fields
     ).execute()
+    print("XXX get_file(folder: %s): obtained\n\t%s" % (folder, result))
+    return result['files'] if 'files' in result else []
 
 
 

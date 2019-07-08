@@ -43,6 +43,7 @@ def test_path_non_existing(monkeypatch):
     given = 'nonexistentfile'
     path_id, error_message = gdpath.path_to_gd(given)
     expected_id = ''
-    expected_msg = 'not found file or folder %s' % given
+    expected_msg = 'element not found: %s' % given
     assert expected_id == path_id
+    assert expected_msg == error_message
 
