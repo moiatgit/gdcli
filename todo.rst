@@ -5,9 +5,6 @@ ToDo List
 Currently
 =========
 
-- simplify gdconfig so it:
-
-  - (done) always takes settings from ~/.gdcli
 
 
 To Do List
@@ -17,7 +14,7 @@ To Do List
 
   start with basic help
 
-- gdcli_pwd
+- (done) gdcli_pwd
 
 - (done) create gdcli_start.py
 
@@ -75,6 +72,9 @@ To Do List
 
 - (done) remove redundancy: redefinition of default gdconfig file path in gdcli_start
   and gdconfig
+
+- robustness: there's a problem in gdconfig. It could break if a non
+  jsonable value is added to a key. Check the XXX in the file
 
 
 Future

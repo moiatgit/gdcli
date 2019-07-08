@@ -8,7 +8,27 @@
 
 
 import sys
+import os
 
+from gdconstants import _STATUS_FILENAME_EXPANDED
+from gdconfig import GDConfig
+
+
+def get_pwd():
+    """ tryies to get current working directory from the status file.
+        If the status file is not present, it creates one with default
+        information.
+        If the pwd is not present in the status file, it adds it and
+        sets to the root directory
+    """
+    if not os.path.exists(_STATUS_FILENAME_EXPANDED):
+        with open(_STATUS_FILENAME_EXPANDED, "w") as f:
+            f.write('{}')
+    status = GDConfig(_STATUS_FILENAME_EXPANDED)
+    if not 'pwd' in status:
+        status['pwd'] = 'root'
+        status.store()
+    return status['pwd']
 
 
 def do_pwd(argv):

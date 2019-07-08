@@ -14,6 +14,7 @@ import logging
 
 from gdconstants import _DEFAULT_CONFIG_FILE_PATH, _DEFAULT_ENCODING
 
+# XXX It should override __setitem__() so it only admits json valid values
 
 class GDConfig(collections.UserDict):
     """ This class behaves like a dict() except it is preloaded with configuration
@@ -27,6 +28,7 @@ class GDConfig(collections.UserDict):
             @param config_path: str with the path to the file with the configuration data
             @param encoding: str with the name of the encoding in the configuration data
         """
+        self.filename = config_path
         with open(config_path, encoding='utf8') as f:
             contents = f.read()
         try:
@@ -45,3 +47,9 @@ class GDConfig(collections.UserDict):
                 self[key] = os.path.expanduser(self[key])
                 if not self[key].startswith('/'):
                     self[key] = os.path.join(os.path.dirname(config_path), self[key])
+
+
+    def store(self):
+        """ stores the contents of this dict in the filename """
+        with open(self.filename, "w") as f:
+            f.write(json.dumps(dict(self)))

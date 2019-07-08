@@ -8,5 +8,8 @@ import os
 _BASE_DIR = '~/.gdcli'
 _GDCONFIG_FILENAME = 'gdconfig.json'
 _DEFAULT_ENCODING = 'utf-8'
-_DEFAULT_CONFIG_FILE_PATH = os.path.expanduser(
-        os.path.join(_BASE_DIR, _GDCONFIG_FILENAME))
+_STATUS_FILENAME = 'status.json'
+
+_BASE_DIR_EXPANDED = os.path.expanduser(_BASE_DIR)
+_DEFAULT_CONFIG_FILE_PATH = os.path.join(_BASE_DIR_EXPANDED, _GDCONFIG_FILENAME)
+_STATUS_FILENAME_EXPANDED = os.path.join(_BASE_DIR_EXPANDED, _STATUS_FILENAME)
