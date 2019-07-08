@@ -3,8 +3,9 @@
 
     This module encapsulates translation from user friendly paths to Google Drive paths
 """
-from gdstatus import get_status
-from gdcore import get_file
+import gdstatus
+import gdcli_pwd
+import gdcore
 
 def path_to_gd(path='.'):
     """ translates path to a Google Drive item.
@@ -12,34 +13,44 @@ def path_to_gd(path='.'):
             id: the corresponding id, or empty when error
             error_msg: a description of the error, empty when no error
     """
+    print("XXX path_to_gd(path:'%s') enters" % path)
     path_id = error_msg = ''
 
     # normalize: absolute and relative paths
-    print("XXX path before anything '%s'" % path)
     path_items = [ item for item in path.split('/') if item.strip() ]
     if path.startswith('/'):
         gd_ids = ['root']
-        print("XXX added root")
     else:
-        gd_ids = get_status()['pwd_id']
+        gd_ids = gdstatus.get_status()['pwd_id']
+    print("XXX\tpath_items", path_items)
+    print("XXX\tgd_ids", gd_ids)
 
-    print("XXX path_items before while", path_items)
     while path_items:
+        print("XXX\t\tin the while, path_items", path_items)
         item = path_items.pop(0)
-        print("XXX in the while checking item", item)
-        items = get_file(gd_ids[-1])
-        print("XXX items from get_file(%s): %s" %(gd_ids[-1], items))
-        if not items:
+        if item == '.':
+            print("XXX\t\tignoring . gd_ids:", gd_ids)
+            continue
+        if item == '..':
+            raise 'not supported parent ref yet'
+        gd_items = gdcore.get_file(item, folder=gd_ids[-1])
+        if not gd_items:
             error_msg = "element not found: %s" % item
             break
+        if len(gd_items) > 1:
+            print_warning('More than one item named as %s' % item)
+        item_info = gd_items[0]
+        gd_ids.append(item_info['id'])
         print('XXX item_info', item_info)
+        print('XXX now gd_ids', gd_ids)
 
+    print("XXX\tfinished while. gd_ids", gd_ids)
     if not error_msg:
-        print("XXX get path_id from last ", gd_ids[-1])
         path_id = gd_ids[-1]
-    print("XXX once processed path_items")
     print("\terror_msg '%s'" % error_msg)
     print("\tgd_ids %s" % gd_ids)
     print("\tpath_id '%s'" % path_id)
 
     return (path_id, error_msg)
+
+

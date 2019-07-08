@@ -11,6 +11,7 @@ import json
 
 import gdcore
 import gdpath
+from gdconstants import print_warning
 
 
 _MIMETYPE_TO_EXTENSION_MAPPINGS = {
@@ -24,6 +25,7 @@ _MIMETYPE_TO_EXTENSION_MAPPINGS = {
     'image/jpeg': 'jpeg',
 }
 
+
 def print_file(filespec):
     """ pretty prints the file spec """
     if 'fileExtension' in filespec:
@@ -33,12 +35,33 @@ def print_file(filespec):
     size = '%s bytes' % filespec['size'] if 'size' in filespec else ''
     print('%s%s %s' % (filespec['name'], extension, size))
 
+
 def print_files(files):
     """ pretty prints the files """
     print('Google Driver CLI: ls')
     for item in files['files']:
         print_file(item)
     print('\ntotal files: %s' % len(files['files']))
+
+
+def get_files(path):
+    """ gets the files in the corresponding path.
+        If path is a file, it will return just one file if exists.
+        @param path: the path to the files to be listed
+        @return: a tuple:
+            items found: the list of items found matching requirements if no error
+            error message: the error message if any
+        """
+    print("XXX gdcli_ls.get_files(path: %s)" % path)
+    item_id, error_msg = gdpath.path_to_gd(path)
+    if error_msg:
+        return ([], error_msg)
+    files = gdcore.get_list(item_id)
+    if files:
+        return (files, '')
+    error_msg = 'No files found for %s' % path
+    return ([], error_msg)
+
 
 def do_ls(argv):
     """ lists contents in Google Driver
@@ -47,14 +70,14 @@ def do_ls(argv):
         argv = ['.']
     for item in argv:
         print("XXX listing item", item)
-        item_id, error_msg = gdpath.path_to_gd(item)
+        files, error_msg = gdpath.path_to_gd(item)
         if error_msg:
             print_warning(error_msg)
             continue
-        files = gdcore.get_list(item_id)
         print(json.dumps(files))
         print("XXXXXX")
         print_files(files)
+
 
 def main():
     """ performs the interactive task of this module """

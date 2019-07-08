@@ -52,16 +52,26 @@ def get_list(folder='root'):
 
 def get_file(filename, folder='root'):
     """ returns the requested file """
+    print("XXX !!!! IT SHOULN'T BE CALLING THIS!")
     fields = 'files(id,name,mimeType)'
     result = get_driver().files().list(
         q="name='%s' and '%s' in parents and trashed=false" % (filename, folder),
         spaces='drive',
         fields=fields
     ).execute()
-    print("XXX get_file(folder: %s): obtained\n\t%s" % (folder, result))
+    print("XXX gdcore.get_file(folder: %s): obtained\n\t%s" % (folder, result))
     return result['files'] if 'files' in result else []
 
 
+def is_folder(filespec):
+    """ returns true if filespec specifies a folder
+        @param filespec: is one file representation obtained from the driver.
+                         It is a dict
+        In case filespec doesn't contain key 'mimeType', it returns False
+    """
+    if not 'mimeType' in filespec:
+        return False
+    return filespec['mimeType'] == 'application/vnd.google-apps.folder'
 
 if __name__ == "__main__":
     print_error_and_exit('This file is not intended to run alone')
