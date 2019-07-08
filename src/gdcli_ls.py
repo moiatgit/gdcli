@@ -39,9 +39,9 @@ def print_file(filespec):
 def print_files(files):
     """ pretty prints the files """
     print('Google Driver CLI: ls')
-    for item in files['files']:
+    for item in files:
         print_file(item)
-    print('\ntotal files: %s' % len(files['files']))
+    print('\ntotal files: %s' % len(files))
 
 
 def get_files(path):
@@ -52,7 +52,6 @@ def get_files(path):
             items found: the list of items found matching requirements if no error
             error message: the error message if any
         """
-    print("XXX gdcli_ls.get_files(path: %s)" % path)
     item_id, error_msg = gdpath.path_to_gd(path)
     if error_msg:
         return ([], error_msg)
@@ -69,13 +68,10 @@ def do_ls(argv):
     if not argv:
         argv = ['.']
     for item in argv:
-        print("XXX listing item", item)
-        files, error_msg = gdpath.path_to_gd(item)
+        files, error_msg = get_files(item)
         if error_msg:
             print_warning(error_msg)
             continue
-        print(json.dumps(files))
-        print("XXXXXX")
         print_files(files)
 
 

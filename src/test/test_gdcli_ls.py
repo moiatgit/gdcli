@@ -1,15 +1,6 @@
 """
     Testing of gdcli_ls utilities
     This module is expected to be run by pytest
-
-    TODO tests
-
-    When one arg only
-    - when no files found
-    - when one file
-    - when more than one file
-
-    When multiple args
 """
 
 import pytest

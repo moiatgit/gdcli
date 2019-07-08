@@ -13,7 +13,6 @@ def path_to_gd(path='.'):
             id: the corresponding id, or empty when error
             error_msg: a description of the error, empty when no error
     """
-    print("XXX path_to_gd(path:'%s') enters" % path)
     path_id = error_msg = ''
 
     # normalize: absolute and relative paths
@@ -22,14 +21,10 @@ def path_to_gd(path='.'):
         gd_ids = ['root']
     else:
         gd_ids = gdstatus.get_status()['pwd_id']
-    print("XXX\tpath_items", path_items)
-    print("XXX\tgd_ids", gd_ids)
 
     while path_items:
-        print("XXX\t\tin the while, path_items", path_items)
         item = path_items.pop(0)
         if item == '.':
-            print("XXX\t\tignoring . gd_ids:", gd_ids)
             continue
         if item == '..':
             raise 'not supported parent ref yet'
@@ -41,15 +36,9 @@ def path_to_gd(path='.'):
             print_warning('More than one item named as %s' % item)
         item_info = gd_items[0]
         gd_ids.append(item_info['id'])
-        print('XXX item_info', item_info)
-        print('XXX now gd_ids', gd_ids)
 
-    print("XXX\tfinished while. gd_ids", gd_ids)
     if not error_msg:
         path_id = gd_ids[-1]
-    print("\terror_msg '%s'" % error_msg)
-    print("\tgd_ids %s" % gd_ids)
-    print("\tpath_id '%s'" % path_id)
 
     return (path_id, error_msg)
 

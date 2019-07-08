@@ -13,7 +13,6 @@ def get_status():
         If the status file is not present, it creates one with default
         information.
     """
-    print("XXX !!! THIS SHOULDN'T BE CALL")
 
     def create_status_file_if_necessary():
         if not os.path.exists(_STATUS_FILENAME_EXPANDED):
