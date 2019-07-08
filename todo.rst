@@ -5,37 +5,22 @@ ToDo List
 Currently
 =========
 
-- decide whether improve ls or start with cd
 
 
 To Do List
 ==========
 
-- (done) create gdcli_help
+- gdpath.py
 
-  start with basic help
+  This module should allow translation from nix like paths to gd like
+  paths (i.e. ids)
 
-- (done) gdcli_pwd
-
-- (done) create gdcli_start.py
-
-  It should guide the user to configure the app
-
-  - check whether ~/.gdcli exists
-
-  - check client_secrets.json
-
-  - check token or launch to get it
-
-    (dismissed) This could simplify current code since gdcore.py authorize() is
-    checking for this token and launching the browser in case there's a problem.
-    New workings could be just to issue an error asking to run
-    ``gdcli_start.py``
-
-- create gdcli_cd.py
+- improve gdcli_cd.py
 
   it should be able to store current folder somewhere, including the path from
   root (remember this filesystem is not hierarchical)
+
+  a new module dealing with paths is required: gdpath.py
 
 - add version notice (e.g. gdcli v0.1) it could go in a settings file or
   similar
@@ -70,9 +55,6 @@ To Do List
   - remove (move a file to trash)
 
   - upload (upload a file from local filesystem)
-
-- (done) remove redundancy: redefinition of default gdconfig file path in gdcli_start
-  and gdconfig
 
 - robustness: there's a problem in gdconfig. It could break if a non
   jsonable value is added to a key. Check the XXX in the file

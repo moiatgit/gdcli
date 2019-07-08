@@ -7,6 +7,7 @@
 
     Note: any key ended by '_path' will be user expanded with os.path.expanduser()
 """
+
 import os
 import collections
 import json

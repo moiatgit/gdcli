@@ -12,7 +12,7 @@ import os
 import os.path
 import sys
 
-from gdconstants import _BASE_DIR, _GDCONFIG_FILENAME
+from gdconstants import _BASE_DIR, _GDCONFIG_FILENAME, print_error_and_exit
 import gdconfig
 from gdcore import get_driver
 
@@ -24,12 +24,6 @@ _EXPECTED_CONTENTS_IN_GDCONFIG = (
     '\t}\n\n'
     'Notes: These values can be changed if you know what you are doing.\n'
     '       Keys suffixed with _path admit a relative path (e.g. ~/anyfolder/filename)\n')
-
-def print_error_and_exit(msg):
-    """ prints the message to the stderr and exits with error code 1 """
-    print('ERROR: ' + msg, file=sys.stderr)
-    sys.exit(1)
-
 
 def do_start(argv):
     """ checks that everything is ok to run the app.

@@ -7,6 +7,8 @@
 """
 import sys
 
+from gdconstants import print_warning
+
 _GENERAL_HELP = (
         'Google Drive CLI: help',
         '',
@@ -41,7 +43,7 @@ def do_help(argv):
     """ shows help.
         @argv is a list of str arguments """
     if argv:
-        print('WARNING: specific help about a command is not available yet\n')
+        print_warning('specific help about a command is not available yet.')
     show_general_help()
 
 
