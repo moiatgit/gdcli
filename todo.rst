@@ -7,7 +7,7 @@ Currently
 
 On path testing
 
-- gdcli_ls is broken
+- (fixed) gdcli_ls is broken
 
   ::
 
@@ -30,6 +30,8 @@ On path testing
 
 To Do List
 ==========
+
+- test_gdpath should mock gdstatus since it is getting pwd from there!
 
 - gdpath.py
 
@@ -80,6 +82,7 @@ To Do List
 - robustness: there's a problem in gdconfig. It could break if a non
   jsonable value is added to a key. Check the XXX in the file
 
+- add color to the output (e.g. {.folder} could appear in a different color when ls
 
 Future
 ======

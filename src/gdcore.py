@@ -38,11 +38,13 @@ def get_driver():
 
 
 def get_list(folder='root'):
-    """ returns the list of files in the given folder """
-    fields = 'files(id,name,mimeType,size,fileExtension)'
+    """ returns the list of files in the given folder
+        @param folder: str containing the Google Drive id of a folder
+    """
+    print("XXX get_list() folder", folder)
+    fields = 'files(id,name,mimeType)'
     return get_driver().files().list(
-        q="'%s' in parents and trashed=false" % folder,
-        fields=fields
+        q="'" + folder + "' in parents and trashed=false",
     ).execute()
 
 
@@ -50,7 +52,8 @@ def get_file(filename, folder='root'):
     """ returns the requested file """
     fields = 'files(id,name,mimeType)'
     return get_driver().files().list(
-        q="'%s' in parents and trashed=false" % folder,
+        q="name='%s' and '%s' in parents and trashed=false" % (filename, folder),
+        spaces='drive',
         fields=fields
     ).execute()
 

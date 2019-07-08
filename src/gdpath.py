@@ -4,6 +4,7 @@
     This module encapsulates translation from user friendly paths to Google Drive paths
 """
 from gdstatus import get_status
+from gdcore import get_file
 
 def path_to_gd(path='.'):
     """ translates path to a Google Drive item.

@@ -9,8 +9,8 @@
 import sys
 import json
 
-from gdcore import get_list
-from gdcli_pwd import get_pwd
+import gdcore
+import gdpath
 
 
 _MIMETYPE_TO_EXTENSION_MAPPINGS = {
@@ -29,7 +29,7 @@ def print_file(filespec):
     if 'fileExtension' in filespec:
         extension = ''
     else:
-        extension = '.{%s}' % _MIMETYPE_TO_EXTENSION_MAPPINGS.get(filespec['mimeType'], 'unknown')
+        extension = '{.%s}' % _MIMETYPE_TO_EXTENSION_MAPPINGS.get(filespec['mimeType'], 'unknown')
     size = '%s bytes' % filespec['size'] if 'size' in filespec else ''
     print('%s%s %s' % (filespec['name'], extension, size))
 
@@ -43,12 +43,18 @@ def print_files(files):
 def do_ls(argv):
     """ lists contents in Google Driver
         @param argv: a list of str arguments """
-    if argv:
-        print_warning("ls not implemented yet with arguments")
-    files = get_list(get_pwd())
-    print(json.dumps(files))
-    print("XXXXXX")
-    print_files(files)
+    if not argv:
+        argv = ['.']
+    for item in argv:
+        print("XXX listing item", item)
+        item_id, error_msg = gdpath.path_to_gd(item)
+        if error_msg:
+            print_warning(error_msg)
+            continue
+        files = gdcore.get_list(item_id)
+        print(json.dumps(files))
+        print("XXXXXX")
+        print_files(files)
 
 def main():
     """ performs the interactive task of this module """

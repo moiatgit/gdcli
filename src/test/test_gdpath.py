@@ -14,6 +14,8 @@
     ..
     /..
     /existent/..
+    /nonexistent/..
+    /existingfile/something
 
 """
 import gdcore
