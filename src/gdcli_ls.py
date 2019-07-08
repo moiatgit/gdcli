@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 """
-    google drive cli: ls
+    Google Driver cli: ls
 
     This script shows the files in the driver
 """
@@ -9,7 +9,7 @@
 import sys
 import json
 
-from gdcore import get_driver
+from gdcore import get_list
 from gdcli_pwd import get_pwd
 
 
@@ -24,14 +24,6 @@ _MIMETYPE_TO_EXTENSION_MAPPINGS = {
     'image/jpeg': 'jpeg',
 }
 
-def get_list(drive, folder='root'):
-    """ returns the list of files in the folder """
-    fields = 'files(id,name,mimeType,size,fileExtension)'
-    return drive.files().list(
-        q="'%s' in parents and trashed=false" % folder,
-        fields=fields
-    ).execute()
-
 def print_file(filespec):
     """ pretty prints the file spec """
     if 'fileExtension' in filespec:
@@ -43,16 +35,17 @@ def print_file(filespec):
 
 def print_files(files):
     """ pretty prints the files """
-    print('Google Drive CLI: ls')
+    print('Google Driver CLI: ls')
     for item in files['files']:
         print_file(item)
     print('\ntotal files: %s' % len(files['files']))
 
 def do_ls(argv):
-    """ lists contents in Google Drive
-        @param argv: a list of str arguments (ignored in this version) """
-    driver = get_driver()
-    files = get_list(driver, get_pwd())
+    """ lists contents in Google Driver
+        @param argv: a list of str arguments """
+    if argv:
+        print_warning("ls not implemented yet with arguments")
+    files = get_list(get_pwd())
     print(json.dumps(files))
     print("XXXXXX")
     print_files(files)

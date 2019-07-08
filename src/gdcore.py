@@ -37,5 +37,24 @@ def get_driver():
     return driver
 
 
+def get_list(folder='root'):
+    """ returns the list of files in the given folder """
+    fields = 'files(id,name,mimeType,size,fileExtension)'
+    return get_driver().files().list(
+        q="'%s' in parents and trashed=false" % folder,
+        fields=fields
+    ).execute()
+
+
+def get_file(filename, folder='root'):
+    """ returns the requested file """
+    fields = 'files(id,name,mimeType)'
+    return get_driver().files().list(
+        q="'%s' in parents and trashed=false" % folder,
+        fields=fields
+    ).execute()
+
+
+
 if __name__ == "__main__":
     print_error_and_exit('This file is not intended to run alone')

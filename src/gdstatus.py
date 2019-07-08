@@ -13,13 +13,16 @@ def get_status():
         If the status file is not present, it creates one with default
         information.
     """
+
     def create_status_file_if_necessary():
         if not os.path.exists(_STATUS_FILENAME_EXPANDED):
             with open(_STATUS_FILENAME_EXPANDED, "w") as f:
                 f.write('{}')
+
     def add_pwd_if_necessary(status):
-        if not 'pwd' in status:
-            status['pwd'] = 'root'
+        if not 'pwd' in status or not 'pwd_id' in status:
+            status['pwd'] = '/'
+            status['pwd_id'] = ['root']     # it keeps the path to pwd from root, so it can get expected parent
             status.store()
 
     create_status_file_if_necessary()

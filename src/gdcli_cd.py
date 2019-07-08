@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 """
-    google drive cli: cd
+    Google Drive cli: cd
 
     This script allows changing current directory in the driver
 """
