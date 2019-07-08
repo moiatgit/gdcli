@@ -44,7 +44,7 @@ def path_to_gd(path='.'):
                 break
 
         if len(gd_items) > 1:
-            print_warning('More than one item named as %s' % item)
+            print_warning('more than one item named as %s' % item)
         item_info = gd_items[0]
         gd_ids.append(item_info['id'])
 

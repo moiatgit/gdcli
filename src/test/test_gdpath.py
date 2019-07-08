@@ -229,7 +229,7 @@ def test_path_mixing_parents_and_dots(initial_pwd_non_root):
     assert expected_msg == error_message
 
 
-def test_path_slash_existent_existent(monkeypatch, initial_pwd_root):
+def test_path_slash_existent_existent_folder(monkeypatch, initial_pwd_root):
     contents = [
         [ {'name': 'folder1', 'id': 'id1',
            'mimeType': 'application/vnd.google-apps.folder'}],
@@ -245,6 +245,25 @@ def test_path_slash_existent_existent(monkeypatch, initial_pwd_root):
     expected_msg = ''
     assert expected_id == path_id
     assert expected_msg == error_message
+
+
+def test_path_slash_existent_existent_file(monkeypatch, initial_pwd_root):
+    contents = [
+        [ {'name': 'folder1', 'id': 'id1',
+           'mimeType': 'application/vnd.google-apps.folder'}],
+        [ {'name': 'file2.jpg', 'id': 'id2',
+           'mimeType': 'image/jpeg'}],
+    ]
+
+    fake_get_file = build_mock_get(contents)
+    monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
+    given = '/folder1/file2.jpg'
+    path_id, error_message = gdpath.path_to_gd(given)
+    expected_id = 'id2'
+    expected_msg = ''
+    assert expected_id == path_id
+    assert expected_msg == error_message
+
 
 def test_path_slash_existent_dot_parent(monkeypatch, initial_pwd_root):
     contents = [

@@ -43,7 +43,9 @@ def get_list(folder='root'):
     """
     fields = 'files(id,name,mimeType)'
     result = get_driver().files().list(
-        q="'" + folder + "' in parents and trashed=false",
+        q="'%s' in parents and trashed=false" % folder,
+        spaces='drive',
+        fields=fields
     ).execute()
     return result['files'] if 'files' in result else []
 

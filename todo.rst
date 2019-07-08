@@ -5,18 +5,24 @@ ToDo List
 Currently
 =========
 
-- (done) testing case existing file (not folder) as a step in the path
 
 
 To Do List
 ==========
 
-- (done) test_gdpath should mock gdstatus since it is getting pwd from there!
+- ls has some issues:
 
-- (done) gdpath.py
+  - it seems unable to list a concrete file
 
-  This module should allow translation from nix like paths to gd like
-  paths (i.e. ids)
+    The problem is that gdcore-get_list() are looking for parents not for filenames
+    Therefore, on empty result, it should look for the name of the file in the parent. It should be possible to check for the basedir of the path as folder
+    Another option (of loosers) is to discard this functionality and just allow listing folders
+
+  - it shows the type even for the known file extensions. e.g. file.pdf{.pdf}
+
+  - it shows the title of the script for each passed argument
+
+- gdcore get_list() and get_file() do practically the same. Refactor!
 
 - improve gdcli_cd.py
 
@@ -25,19 +31,18 @@ To Do List
 
   most probably it will require asking to gdpath specifically for a folder
 
-  (done) a new module dealing with paths is required: gdpath.py
-
 - add version notice (e.g. gdcli v0.1) it could go in a settings file or
   similar
 
 - working on gdcli_ls.py
 
+  - folders could be marked ending with slash
+
   - add arguments that allow
 
-    (done) selecting folders to list
-    regex to filter
-    information to be shown: currently name, extension and size
-    way to map human folder and file names to gd ids. See https://developers.google.com/drive/api/v3/search-files
+    - regex (or at least *) to path
+
+    - information to be shown: i.e. name, extension and size
 
 - move gdcli_pwd.get_pwd_id() and get_pwd() to gdstatus
 

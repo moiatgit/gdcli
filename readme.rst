@@ -52,6 +52,20 @@ Get information of your Google Drive:
                       upload limit: 5,242,880,000,000
 
 
+List contents
+-------------
+
+Get the contents of a folder in your Google Drive:
+
+::
+
+    $ python3 gdcli_ls.py /folder1
+    Google Driver CLI: ls
+    file1.pdf
+    file2.pdf
+    folder11{.folder}
+
+    total files: 3
 
 License
 =======
