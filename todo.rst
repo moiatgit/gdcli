@@ -5,15 +5,15 @@ ToDo List
 Currently
 =========
 
-- testing case existing file (not folder) as a step in the path
+- (done) testing case existing file (not folder) as a step in the path
 
 
 To Do List
 ==========
 
-- test_gdpath should mock gdstatus since it is getting pwd from there!
+- (done) test_gdpath should mock gdstatus since it is getting pwd from there!
 
-- gdpath.py
+- (done) gdpath.py
 
   This module should allow translation from nix like paths to gd like
   paths (i.e. ids)
@@ -23,7 +23,9 @@ To Do List
   it should be able to store current folder somewhere, including the path from
   root (remember this filesystem is not hierarchical)
 
-  a new module dealing with paths is required: gdpath.py
+  most probably it will require asking to gdpath specifically for a folder
+
+  (done) a new module dealing with paths is required: gdpath.py
 
 - add version notice (e.g. gdcli v0.1) it could go in a settings file or
   similar
@@ -32,7 +34,7 @@ To Do List
 
   - add arguments that allow
 
-    selecting folders to list
+    (done) selecting folders to list
     regex to filter
     information to be shown: currently name, extension and size
     way to map human folder and file names to gd ids. See https://developers.google.com/drive/api/v3/search-files

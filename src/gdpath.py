@@ -30,10 +30,19 @@ def path_to_gd(path='.'):
             if len(gd_ids) > 1:
                 gd_ids.pop()
             continue
+
         gd_items = gdcore.get_file(item, folder=gd_ids[-1])
-        if not gd_items:
+
+        if not gd_items:    # item not found
             error_msg = "element not found: %s" % item
             break
+
+        if path_items:  # item must be a folder
+            gd_items = [ gd_item for gd_item in gd_items if gdcore.is_folder(gd_item) ]
+            if not gd_items: # none of the items found was a folder
+                error_msg = "not a directory: %s" % item
+                break
+
         if len(gd_items) > 1:
             print_warning('More than one item named as %s' % item)
         item_info = gd_items[0]

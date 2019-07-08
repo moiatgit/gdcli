@@ -278,7 +278,8 @@ def test_path_slash_existent_nonexistent(monkeypatch, initial_pwd_root):
     assert expected_id == path_id
     assert expected_msg == error_message
 
-def test_path_slash_existent_file_as_folder(monkeypatch, initial_pwd_root):
+
+def test_path_existent_file_as_folder(monkeypatch, initial_pwd_root):
     contents = [
         [ {'name': 'img.jpg', 'id': 'id1',
            'mimeType': 'image/jpeg'}],
@@ -289,7 +290,7 @@ def test_path_slash_existent_file_as_folder(monkeypatch, initial_pwd_root):
     given = '/img.jpg/anything'
     path_id, error_message = gdpath.path_to_gd(given)
     expected_id = ''
-    expected_msg = 'it is a file not a directory: img.jpg'
+    expected_msg = 'not a directory: img.jpg'
     assert expected_id == path_id
     assert expected_msg == error_message
 

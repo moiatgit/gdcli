@@ -31,7 +31,6 @@ def test_pwd_when_root(initial_pwd_root):
 
 def test_pwd_when_non_root(initial_pwd_non_root):
     import gdstatus
-    print("XXX!!! status", gdstatus.get_status())
     obtained = gdcli_pwd.get_pwd()
     expected = '/parentfolder/currentfolder'
     assert expected == obtained
