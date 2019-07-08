@@ -10,6 +10,7 @@ import sys
 import json
 
 from gdcore import get_driver
+from gdcli_pwd import get_pwd
 
 
 _MIMETYPE_TO_EXTENSION_MAPPINGS = {
@@ -51,7 +52,7 @@ def do_ls(argv):
     """ lists contents in Google Drive
         @param argv: a list of str arguments (ignored in this version) """
     driver = get_driver()
-    files = get_list(driver, '0BwqRFv-dLVHBLXoyVjdIUjZMZ28')
+    files = get_list(driver, get_pwd())
     print(json.dumps(files))
     print("XXXXXX")
     print_files(files)

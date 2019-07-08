@@ -5,6 +5,7 @@ ToDo List
 Currently
 =========
 
+- decide whether improve ls or start with cd
 
 
 To Do List
