@@ -20,7 +20,9 @@ To Do List
 
   - it shows the type even for the known file extensions. e.g. file.pdf{.pdf}
 
-  - it shows the title of the script for each passed argument
+  - (done) it shows the title of the script for each passed argument
+
+  - it breaks when a missing file is required
 
 - gdcore get_list() and get_file() do practically the same. Refactor!
 

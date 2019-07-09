@@ -11,6 +11,7 @@ import json
 
 import gdcore
 import gdpath
+import gdcli_pwd
 from gdconstants import print_warning
 
 
@@ -33,15 +34,19 @@ def print_file(filespec):
     else:
         extension = '{.%s}' % _MIMETYPE_TO_EXTENSION_MAPPINGS.get(filespec['mimeType'], 'unknown')
     size = '%s bytes' % filespec['size'] if 'size' in filespec else ''
-    print('%s%s %s' % (filespec['name'], extension, size))
+    print('\t%s%s %s' % (filespec['name'], extension, size))
 
 
-def print_files(files):
+def print_files(folder, files):
     """ pretty prints the files """
-    print('Google Driver CLI: ls')
+    print("\nfolder: ", end='')
+    if folder == '.':
+        print(gdcli_pwd.get_pwd())
+    else:
+        print(folder)
     for item in files:
         print_file(item)
-    print('\ntotal files: %s' % len(files))
+    print('total files: %s' % len(files))
 
 
 def get_files(path):
@@ -55,6 +60,9 @@ def get_files(path):
     item_id, error_msg = gdpath.path_to_gd(path)
     if error_msg:
         return ([], error_msg)
+    if gdcore.is_folder(item_id):
+        XXX the problem is that gdpath.path_to_gd() is not returning if the item is a folder or not
+        once known, it should call gdcore.get_list() only when item_id is sure to belong to a folder
     files = gdcore.get_list(item_id)
     if files:
         return (files, '')
@@ -67,12 +75,13 @@ def do_ls(argv):
         @param argv: a list of str arguments """
     if not argv:
         argv = ['.']
+    print('Google Driver CLI: ls')
     for item in argv:
         files, error_msg = get_files(item)
         if error_msg:
             print_warning(error_msg)
             continue
-        print_files(files)
+        print_files(item, files)
 
 
 def main():

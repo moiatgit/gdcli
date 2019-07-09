@@ -12,23 +12,7 @@ import pytest
 import gdcore
 import gdstatus
 import gdpath
-
-def build_mock_get(contents):
-    """ given a list of contents to be return by a mocked call to gdcore.get_file() or
-        gdcore.get_list()
-        it returns a function that will deliver each entry of the contents """
-
-    def generator(contents):
-        for c in contents:
-            yield c
-    gen = generator(contents)
-
-
-    def mock_get(*args, **kwargs):
-        nonlocal gen
-        return next(gen)
-
-    return mock_get
+import utiltests
 
 
 @pytest.fixture()
@@ -237,7 +221,7 @@ def test_path_slash_existent_existent_folder(monkeypatch, initial_pwd_root):
            'mimeType': 'application/vnd.google-apps.folder'}],
     ]
 
-    fake_get_file = build_mock_get(contents)
+    fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/folder1/folder2'
     path_id, error_message = gdpath.path_to_gd(given)
@@ -255,7 +239,7 @@ def test_path_slash_existent_existent_file(monkeypatch, initial_pwd_root):
            'mimeType': 'image/jpeg'}],
     ]
 
-    fake_get_file = build_mock_get(contents)
+    fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/folder1/file2.jpg'
     path_id, error_message = gdpath.path_to_gd(given)
@@ -271,7 +255,7 @@ def test_path_slash_existent_dot_parent(monkeypatch, initial_pwd_root):
            'mimeType': 'application/vnd.google-apps.folder'}],
     ]
 
-    fake_get_file = build_mock_get(contents)
+    fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/folder1/./..'
     path_id, error_message = gdpath.path_to_gd(given)
@@ -288,7 +272,7 @@ def test_path_slash_existent_nonexistent(monkeypatch, initial_pwd_root):
         [],
     ]
 
-    fake_get_file = build_mock_get(contents)
+    fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/folder1/nonexistentfile'
     path_id, error_message = gdpath.path_to_gd(given)
@@ -304,7 +288,7 @@ def test_path_existent_file_as_folder(monkeypatch, initial_pwd_root):
            'mimeType': 'image/jpeg'}],
     ]
 
-    fake_get_file = build_mock_get(contents)
+    fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/img.jpg/anything'
     path_id, error_message = gdpath.path_to_gd(given)
