@@ -71,7 +71,6 @@ def test_ls_get_files_path_is_existing_file(monkeypatch):
          ],
         [ {'name': 'file1.jpg', 'id': 'file1id',
            'mimeType': 'image/jpeg'}],
-
     ]
     contents_list = []
 
