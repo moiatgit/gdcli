@@ -61,15 +61,17 @@ def path_to_gd(path='.'):
         name = '/'
         gd_id = 'root'
         mime_type = gdconstants._FOLDER_MIME_TYPE
+        item = GDItem(name, gd_id, mime_type)
     else:
         # normalize: absolute and relative paths
         path_items = [ item for item in path.split('/') if item.strip() ]
+        name_path = path_items[:]
         print("XXX\tpath_items:", path_items)
         if path.startswith('/'):
-            gd_ids = ['root']
+            id_path = ['root']
         else:
-            gd_ids = gdstatus.get_status()['pwd_id']
-        print("XXX\tgd_ids:", gd_ids)
+            id_path = gdstatus.get_status()['pwd_id']
+        print("XXX\tgd_ids:", id_path)
 
         while path_items:
             item = path_items.pop(0)
@@ -77,11 +79,11 @@ def path_to_gd(path='.'):
             if item == '.':
                 continue
             if item == '..':
-                if len(gd_ids) > 1:
-                    gd_ids.pop()
+                if len(id_path) > 1:
+                    id_path.pop()
                 continue
 
-            gd_items = gdcore.get_file(item, folder=gd_ids[-1])
+            gd_items = gdcore.get_file(item, folder=id_path[-1])
             print("XXX\t>>> gdcore.get_file() returns", gd_items)
 
             if not gd_items:    # item not found
@@ -97,12 +99,13 @@ def path_to_gd(path='.'):
             if len(gd_items) > 1:
                 gdconstants.print_warning('more than one item named as %s' % item)
             item_info = gd_items[0]
-            gd_ids.append(item_info['id'])
-            print("XXX\t>>> item %s results in %s with gd_ids %s" % (item, item_info['id'], gd_ids))
+            id_path.append(item_info['id'])
+            print("XXX\t>>> item %s results in %s with id_path %s" % (item, item_info['id'], id_path))
 
         if not error_msg:
-            gd_id = gd_ids[-1]
+            gd_id = id_path.pop()
+        item = GDItem(name, gd_id, mime_type, name_path, id_path)
 
-    return (GDItem(name, gd_id, mime_type),  error_msg)
+    return (item,  error_msg)
 
 
