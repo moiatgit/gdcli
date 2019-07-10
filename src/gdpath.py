@@ -15,11 +15,11 @@ class GDItem(collections.UserDict):
         - name: item name
         - id:   item id at GD
         - mimeType: mime type as GD reported
-        - named_path: list of name of folders to reach the item (first is always root '/')
+        - named_path: str with the absolute path (by default '/')
         - id_path: list of ids of folders to reach the item (first is always 'root')
     """
 
-    def __init__(self, name, gd_id, mime_type, named_path=['/'], id_path=['root']):
+    def __init__(self, name, gd_id, mime_type, named_path='/', id_path=['root']):
         """ initializes a new instance of a GD item
             @param name: name of the item
             @param gd_id: GD id
@@ -48,14 +48,16 @@ class GDItem(collections.UserDict):
 
 
 
-def path_to_gd(path='.'):
+def path_to_gd(path=''):
     """ translates path to a GDItem
         It returns a tuple with values:
-            item: the corresponding item, or empty when error
+            item: the corresponding item, or None when error
             error_msg: a description of the error, empty when no error
     """
     print("XXX gdpath.path_to_gd(path: %s)" % path)
     gd_id = error_msg = ''
+    if path.startswith('./'):
+        path = path[2:]
 
     if path == '/':
         name = '/'
@@ -65,13 +67,16 @@ def path_to_gd(path='.'):
     else:
         # normalize: absolute and relative paths
         path_items = [ item for item in path.split('/') if item.strip() ]
-        name_path = path_items[:]
-        print("XXX\tpath_items:", path_items)
         if path.startswith('/'):
             id_path = ['root']
+            name_path = path
         else:
             id_path = gdstatus.get_status()['pwd_id']
-        print("XXX\tgd_ids:", id_path)
+            name_path = gdstatus.get_status()['pwd']
+        name = path_items[-1]
+        print("XXX\tpath_items:", path_items)
+        print("XXX\tname_path: ", name_path)
+        print("XXX\tid_path:", id_path)
 
         while path_items:
             item = path_items.pop(0)
@@ -100,11 +105,14 @@ def path_to_gd(path='.'):
                 gdconstants.print_warning('more than one item named as %s' % item)
             item_info = gd_items[0]
             id_path.append(item_info['id'])
+            mime_type = item_info['mimeType']
             print("XXX\t>>> item %s results in %s with id_path %s" % (item, item_info['id'], id_path))
 
-        if not error_msg:
+        if error_msg:
+            item = None
+        else:
             gd_id = id_path.pop()
-        item = GDItem(name, gd_id, mime_type, name_path, id_path)
+            item = GDItem(name, gd_id, mime_type, name_path, id_path)
 
     return (item,  error_msg)
 
