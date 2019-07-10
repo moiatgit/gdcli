@@ -21,6 +21,11 @@ Current problem:
 To Do List
 ==========
 
+- important optimization
+
+  currently, each time gdcli access to GD, it requires authentication!
+  Change it to a singleton or something so it can share the same driver during all the process life!
+
 - ls has some issues:
 
   - it seems unable to list a concrete file
