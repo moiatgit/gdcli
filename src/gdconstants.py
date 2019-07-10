@@ -17,6 +17,7 @@ _BASE_DIR_EXPANDED = os.path.expanduser(_BASE_DIR)
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(_BASE_DIR_EXPANDED, _GDCONFIG_FILENAME)
 _STATUS_FILENAME_EXPANDED = os.path.join(_BASE_DIR_EXPANDED, _STATUS_FILENAME)
 
+_FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder'
 
 def print_error(msg):
     """ shows the message to stderr """

@@ -9,11 +9,13 @@ Current problem:
 
 - there's a problem with gdpath: it returns the item id only but I'd need
   also whether it is a folder or not.
-  idea: create a class GDItem that has name, id and mimeType (it could
-  have other contents too, even methods to get them directly from GD when
-  required --lazily)
-  GDFiles should be obtained from pwd (name, id are already and they're
-  always folders)
+
+  I've created gdpath.GDItem to allow keeping this information all the time
+
+  At this moment I'm converting test_gdpath
+
+  Further tasks will involve to get pwd as a GDItem
+
 
 
 To Do List

@@ -34,17 +34,17 @@ def initial_pwd_non_root(monkeypatch):
 
 def test_path_slash_when_on_root(initial_pwd_root):
     given = '/'
-    path_id, error_message = gdpath.path_to_gd(given)
-    expected_id = 'root'
-    assert expected_id == path_id
+    obtained_item, error_message = gdpath.path_to_gd(given)
+    expected_item = gdpath.GDItem('/', 'root', 'application/vnd.google-apps.folder')
+    assert expected_item == obtained_item
     assert len(error_message) == 0
 
 
 def test_path_slash_when_not_on_root(initial_pwd_non_root):
     given = '/'
-    path_id, error_message = gdpath.path_to_gd(given)
-    expected_id = 'root'
-    assert expected_id == path_id
+    obtained_item, error_message = gdpath.path_to_gd(given)
+    expected_item = gdpath.GDItem('/', 'root', 'application/vnd.google-apps.folder')
+    assert expected_item == obtained_item
     assert len(error_message) == 0
 
 

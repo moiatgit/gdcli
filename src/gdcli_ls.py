@@ -61,8 +61,11 @@ def get_files(path):
     if error_msg:
         return ([], error_msg)
     if gdcore.is_folder(item_id):
+        """
         XXX the problem is that gdpath.path_to_gd() is not returning if the item is a folder or not
         once known, it should call gdcore.get_list() only when item_id is sure to belong to a folder
+        """
+        pass
     files = gdcore.get_list(item_id)
     if files:
         return (files, '')
