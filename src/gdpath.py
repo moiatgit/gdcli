@@ -52,7 +52,8 @@ def named_path_to_gd_item(path=''):
     while pwd and path_items and path_items[0] == '..':
         path_items.pop(0)
         pwd = os.path.dirname(pwd)
-        id_path.pop()
+        if len(id_path) > 1:    # do not touch root
+            id_path.pop()
     print("XXX UUU once removed .. pwd=%s id_path=%s path_items=%s" % (pwd, id_path, path_items))
     path = '/'.join(path_items)
 

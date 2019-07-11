@@ -161,7 +161,8 @@ def test_path_parent(initial_pwd_non_root):
 def test_path_parent_slash(initial_pwd_non_root):
     given = '../'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'parentfolderid'
+    expected_item = gditem.GDItem.folder('/granpafolder/parentfolder',
+                                         ['root', 'granpafolderid', 'parentfolderid'])
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
@@ -170,7 +171,17 @@ def test_path_parent_slash(initial_pwd_non_root):
 def test_path_parent_parent(initial_pwd_non_root):
     given = '../..'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'granpafolderid'
+    expected_item = gditem.GDItem.folder('/granpafolder',
+                                         ['root', 'granpafolderid'])
+    expected_msg = ''
+    assert expected_item == path_id
+    assert expected_msg == error_message
+
+def test_path_too_much_parents(initial_pwd_non_root):
+    given = '../../../../..'
+    path_id, error_message = gdpath.named_path_to_gd_item(given)
+    expected_item = gditem.GDItem.folder('/',
+                                         ['root',])
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
@@ -179,7 +190,7 @@ def test_path_parent_parent(initial_pwd_non_root):
 def test_path_slash_parent(initial_pwd_non_root):
     given = '/..'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'root'
+    expected_item = gditem.GDItem.root()
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
@@ -188,7 +199,52 @@ def test_path_slash_parent(initial_pwd_non_root):
 def test_path_mixing_parents_and_dots(initial_pwd_non_root):
     given = './.././../.'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'granpafolderid'
+    expected_item = gditem.GDItem.folder('/granpafolder',
+                                         ['root', 'granpafolderid'])
+    expected_msg = ''
+    assert expected_item == path_id
+    assert expected_msg == error_message
+
+
+def test_path_parent_replacing_folder_in_pwd(monkeypatch, initial_pwd_non_root):
+    contents = [
+        [gditem.GDItem.folder('/granpafolder/parentfolder/newfolder',
+                             ['root', 'granpafolderid', 'parentfolderid',
+                              'newfolderid'])],
+        [gditem.GDItem.folder('/granpafolder/parentfolder/newfolder/folder1',
+                             ['root', 'granpafolderid', 'parentfolderid',
+                              'newfolderid', 'folder1id'])]]
+    fake_get_file = utiltests.build_mock_get(contents)
+    monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
+    given = './../newfolder/folder1'
+    path_id, error_message = gdpath.named_path_to_gd_item(given)
+    expected_item = gditem.GDItem.folder(
+        '/granpafolder/parentfolder/newfolder/folder1',
+        ['root', 'granpafolderid', 'parentfolderid',
+         'newfolderid', 'folder1id']
+    )
+    expected_msg = ''
+    assert expected_item == path_id
+    assert expected_msg == error_message
+
+
+def test_path_parent_replacing_folder_in_given(monkeypatch, initial_pwd_non_root):
+    contents = [
+        [gditem.GDItem.folder('/granpafolder/parentfolder/newfolder',
+                             ['root', 'granpafolderid', 'parentfolderid',
+                              'newfolderid'])],
+        [gditem.GDItem.folder('/granpafolder/parentfolder/newfolder/folder1',
+                             ['root', 'granpafolderid', 'parentfolderid',
+                              'newfolderid', 'folder1id'])]]
+    fake_get_file = utiltests.build_mock_get(contents)
+    monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
+    given = './forgetfolder/.././../newfolder/folder1'
+    path_id, error_message = gdpath.named_path_to_gd_item(given)
+    expected_item = gditem.GDItem.folder(
+        '/granpafolder/parentfolder/newfolder/folder1',
+        ['root', 'granpafolderid', 'parentfolderid',
+         'newfolderid', 'folder1id']
+    )
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
