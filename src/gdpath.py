@@ -4,12 +4,21 @@
     This module encapsulates translation from user friendly paths to Google Drive paths
 """
 
-import gdstatus
+import os.path
+import gdcli_pwd
 import gditem
 import gdcli_pwd
 import gdcore
 import gdconstants
 
+def normalize_path(path):
+    """ normalizes the path so:
+        - it becomes absolute
+        - it does not contain '.' nor '..' steps """
+    if not path.startswith('/'):
+        pwd = gdcli_pwd.get_pwd()
+        path = os.path.join(pwd, path)
+    return os.path.normpath(path)
 
 
 def named_path_to_gd_item(path=''):
@@ -21,13 +30,30 @@ def named_path_to_gd_item(path=''):
 
         @param path: str specifying a *nix-like path
     """
+    path = normalize_path(path)
+
     if path == '/':
-        return gditem.GDItem('/', 'root', gdconstants._FOLDER_MIME_TYPE), ''
+        return gditem.GDItem.root(), ""
 
-    if path in ('', '.', './'):
-        return gditem.GDItem(gdstatus.get_status()['pwd']
+    path_items = path.split('/')[1:]
+    print("XXX path_items (initial)", path_items)
+    id_path = ['root']
+    mime_type = gdconstants.FOLDER_MIME_TYPE
+    while path_items:
+        print("XXX checking path_items", path_items)
+        current = path_items.pop(0)
+        print("XXX\tcurrent: ", current)
+        gd_item = gdcore.get_file(current, folder=id_path[-1])
+        if not gd_item:
+            return None, "not found: %s" % current
+        if path_items and not gd_item.is_folder():
+            return None, "not a directory: %s" % current
+        id_path.append(gd_item['id'])
+        mime_type = gd_item['mimeType']
+    print("XXX finally path    ", os.path.dirname(path))
+    print("XXX         id_path ", id_path)
 
-    path_names = path.split('/')
+    return gditem.GDItem(os.path.dirname(path), id_path, mime_type), ""
 
 
 
@@ -40,6 +66,7 @@ def path_to_gd(path=''):
     print("XXX gdpath.path_to_gd(path: %s)" % path)
 
     if path == '/':
+        pass
 
     gditems = []    # list of GDItem. Lower is root
 
