@@ -50,6 +50,20 @@ def test_proper_item_folder():
     assert not item.is_root()
     assert item.is_folder()
 
+def test_proper_method_folder():
+    named_path = '/a/proper/path'
+    id_path = ['root', 'aid', 'properid', 'pathid']
+    item = gditem.GDItem.folder(named_path, id_path)
+
+    assert item['name'] == 'path'
+    assert item['id'] == 'pathid'
+    assert item['mimeType'] == 'application/vnd.google-apps.folder'
+    assert item['namedPath'] == '/a/proper'
+    assert item['idPath'] == ['root', 'aid', 'properid']
+    assert not item.is_root()
+    assert item.is_folder()
+
+
 def test_proper_item_file():
     named_path = '/a/proper/file.jpg'
     id_path = ['root', 'aid', 'properid', 'fileid']

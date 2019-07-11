@@ -44,16 +44,17 @@ def named_path_to_gd_item(path=''):
         current = path_items.pop(0)
         print("XXX\tcurrent: ", current)
         gd_item = gdcore.get_file(current, folder=id_path[-1])
+        print("XXX got gd_item", gd_item)
         if not gd_item:
             return None, "not found: %s" % current
         if path_items and not gd_item.is_folder():
             return None, "not a directory: %s" % current
         id_path.append(gd_item['id'])
         mime_type = gd_item['mimeType']
-    print("XXX finally path    ", os.path.dirname(path))
+    print("XXX finally path    ", path)
     print("XXX         id_path ", id_path)
 
-    return gditem.GDItem(os.path.dirname(path), id_path, mime_type), ""
+    return gditem.GDItem(path, id_path, mime_type), ""
 
 
 

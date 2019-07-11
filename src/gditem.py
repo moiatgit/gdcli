@@ -62,6 +62,11 @@ class GDItem(collections.UserDict):
         return GDItem('/', ['root'], gdconstants.FOLDER_MIME_TYPE)
 
     @staticmethod
+    def folder(named_path, id_path):
+        """ returns a GDItem as a folder """
+        return GDItem(named_path, id_path, gdconstants.FOLDER_MIME_TYPE)
+
+    @staticmethod
     def proper_paths(named_path, id_path):
         """ returns True when both paths are well defined:
             - absolute (start with root)
