@@ -10,12 +10,33 @@ Currently it is in development phase
 
 If I find the time to make it usable, I'll complete this documentation.
 
+Installation
+============
+
+If you are interested in running this project, you can just clone this repo and
+install the dependencies.
+
+I'm using Python 3.5 because it comes pre-installed in my OS. I would propose
+you to use some virtualization mechanism (e.g. ``virtualenv``) but, if you aren't
+involved in too many projects, you might want to install the dependencies at
+your user folder.
+
+Instructions could go something like:
+
+::
+
+    $ cd whereveryouwanttokeeptit/
+    $ git clone https://github.com/moiatgit/gdcli
+    $ cd gdcli
+    $ pip3 install --user -Ur requirements.txt
+
+
 Available commands
 ==================
 
-Since this project is on development, the following list of commands is probably
-incomplete and/or imprecise. However, I think it could give you an idea of what
-I'm trying to develop.
+Since this project is on development, the following list of commands is most
+probably incomplete and/or imprecise. However, I think it could give you an idea
+of what I'm trying to develop.
 
 Start
 -----
