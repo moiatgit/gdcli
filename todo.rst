@@ -16,6 +16,8 @@ Current problem:
 
   Further tasks will involve to get pwd as a GDItem
 
+- rename path_to_gd() to named_path_to_gditem()
+
 
 
 To Do List
@@ -67,6 +69,13 @@ To Do List
 - create the hub gdcli.py that allows arguments for the different utilities
   (e.g. gdcli_ls.py mydir -> $ gdcli ls mydir)
 
+- consider adding cache features
+
+  i.e. store the folder struct and even the GD files' info, so you can reach them directly
+
+  An option --non-cache could force any command to access directly to GD
+
+  A command refresh or clear_cache could refresh/clear cache info
 
 - other commands:
 

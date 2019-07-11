@@ -26,7 +26,7 @@ def initial_pwd_root(monkeypatch):
 @pytest.fixture()
 def initial_pwd_non_root(monkeypatch):
     contents = {
-        'pwd': ['', 'granpafolder', 'parentfolder', 'currentfolder'],
+        'pwd': '/granpafolder/parentfolder/currentfolder',
         'pwd_id': ['root', 'granpafolderid', 'parentfolderid', 'currentfolderid']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
@@ -105,7 +105,9 @@ def test_path_dot_existent_file_from_root(monkeypatch, initial_pwd_non_root):
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = './file1'
     path_id, error_message = gdpath.path_to_gd(given)
-    expected_item = 'id1'
+    expected_item = gdpath.GDItem('file1', 'id1', 'application/vnd.google-apps.folder',
+                                  '/granpafolder/parentfolder/currentfolder', 
+                                  ['root', 'granpafolderid', 'parentfolderid', 'currentfolderid'])
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
