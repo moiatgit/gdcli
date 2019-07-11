@@ -30,99 +30,59 @@ def named_path_to_gd_item(path=''):
 
         @param path: str specifying a *nix-like path
     """
-    path = normalize_path(path)
+    path = os.path.normpath(path)
+
 
     if path == '/':
         return gditem.GDItem.root(), ""
 
-    path_items = path.split('/')[1:]
-    print("XXX path_items (initial)", path_items)
-    id_path = ['root']
+    if path == '.':
+        return gdcli_pwd.get_pwd_gditem(), ""
+
+    path_items = path.split('/')
+    if path.startswith('/'):
+        id_path = ['root']
+        path_items.pop(0)   # get rid of root
+    else:
+        id_path = gdcli_pwd.get_pwd_id_path()
+
+    pwd = gdcli_pwd.get_pwd()
+
+    # remove back to parent steps ../
+    while pwd and path_items and path_items[0] == '..':
+        path_items.pop(0)
+        pwd = os.path.dirname(pwd)
+        id_path.pop()
+    print("XXX UUU once removed .. pwd=%s id_path=%s path_items=%s" % (pwd, id_path, path_items))
+    path = '/'.join(path_items)
+
+    # initial item is sure a folder
     mime_type = gdconstants.FOLDER_MIME_TYPE
     while path_items:
-        print("XXX checking path_items", path_items)
         current = path_items.pop(0)
-        print("XXX\tcurrent: ", current)
-        gd_item = gdcore.get_file(current, folder=id_path[-1])
-        print("XXX got gd_item", gd_item)
-        if not gd_item:
+
+        # get files with current item name
+        gd_items = gdcore.get_file(current, folder=id_path[-1])
+        if not gd_items:
             return None, "not found: %s" % current
+
+        # remember: it can be more than one item equally named on the same path
+        # any of them will do for the purposes of this method
+        gd_item = gd_items[0]
         if path_items and not gd_item.is_folder():
             return None, "not a directory: %s" % current
         id_path.append(gd_item['id'])
         mime_type = gd_item['mimeType']
-    print("XXX finally path    ", path)
-    print("XXX         id_path ", id_path)
 
-    return gditem.GDItem(path, id_path, mime_type), ""
-
-
-
-def path_to_gd(path=''):
-    """ translates path to a GDItem
-        It returns a tuple with values:
-            item: the corresponding item, or None when error
-            error_msg: a description of the error, empty when no error
-    """
-    print("XXX gdpath.path_to_gd(path: %s)" % path)
-
-    if path == '/':
-        pass
-
-    gditems = []    # list of GDItem. Lower is root
-
-    # normalize: absolute and relative paths
-    path_items = [ item for item in path.split('/') if item.strip() ]
-    name = path_items.pop()
-    if path.startswith('/'):
-        id_path = ['root']
-        named_path = '/'
-        print("XXX\tname_path when absolute", named_path)
+    if not path.startswith('/'):
+        final_path = os.path.join(pwd, path) if path else pwd
+        print("XXX joining from pwd %s and path %s" % (pwd, path))
     else:
-        id_path = gdstatus.get_status()['pwd_id']
-        named_path = gdstatus.get_status()['pwd']
-        print("XXX\tname_path when relative", named_path)
-    print("XXX\tpath_items:", path_items)
-    print("XXX\tname_path: ", named_path)
-    print("XXX\tid_path:", id_path)
+        final_path = path
+    print("XXX final_path   ", final_path)
+    print("XXX final id_path", id_path)
 
-    while path_items:
-        item_name = path_items.pop(0)
-        print("XXX\t>>> considering item %s with rest path_items %s" % (item_name, path_items))
+    return gditem.GDItem(final_path, id_path, mime_type), ""
 
-        if item_name == '.':    # ignore references to current folder
-            continue
-
-        if item_name == '..':   # back one step in the path
-            if len(id_path) > 1:
-                id_path.pop()
-            continue
-
-        gd_items = gdcore.get_file(item, folder=id_path[-1])
-        print("XXX\t>>> gdcore.get_file() returns", gd_items)
-
-        if not gd_items:    # item not found
-            return None, "element not found: %s" % item
-
-        if path_items:  # item must be a folder
-            gd_items = [ gd_item for gd_item in gd_items if gdcore.is_folder(gd_item) ]
-            if not gd_items: # none of the items found was a folder
-                error_msg = "not a directory: %s" % item
-                break
-
-        if len(gd_items) > 1:
-            gdconstants.print_warning('more than one item named as %s' % item)
-        item_info = gd_items[0]
-        id_path.append(item_info['id'])
-        mime_type = item_info['mimeType']
-        print("XXX\t>>> item %s results in %s with id_path %s" % (item, item_info['id'], id_path))
-
-    if error_msg:
-        item = None
-    else:
-        gd_id = id_path.pop()
-        item = gditem.GDItem(name, gd_id, mime_type, named_path, id_path)
-
-    return (item,  error_msg)
 
 

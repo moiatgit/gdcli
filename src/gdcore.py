@@ -52,7 +52,9 @@ def get_list(folder='root'):
 
 
 def get_file(filename, folder='root'):
-    """ returns the requested file """
+    """ returns all the files named as filename and stored in folder.
+        Note: Google Drive allows multiple files equally named in the same folder!
+    """
     print("XXX IT SHOUDLN'T BE CALL NOW!")
     fields = 'files(id,name,mimeType)'
     result = get_driver().files().list(

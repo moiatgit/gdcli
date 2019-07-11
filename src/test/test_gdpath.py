@@ -19,7 +19,7 @@ import utiltests
 @pytest.fixture()
 def initial_pwd_root(monkeypatch):
     contents = {
-        'pwd': [ '' ],
+        'pwd': '/',
         'pwd_id': ['root']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
@@ -27,9 +27,10 @@ def initial_pwd_root(monkeypatch):
 @pytest.fixture()
 def initial_pwd_non_root(monkeypatch):
     contents = {
-        'pwd': '/granpafolder/parentfolder/currentfolder',
+        'pwd':     '/granpafolder/parentfolder/currentfolder',
         'pwd_id': ['root', 'granpafolderid', 'parentfolderid', 'currentfolderid']
     }
+    print("XXX YYY initial pwd", contents)
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
 
 
@@ -86,7 +87,7 @@ def test_path_dot_non_existing(monkeypatch, initial_pwd_root):
 
 def test_path_slash_existent_folder_from_root(monkeypatch, initial_pwd_root):
     contents = [
-        gditem.GDItem.folder('/folder1', ['root', 'folder1id'])
+        [gditem.GDItem.folder('/folder1', ['root', 'folder1id'])]
     ]
     fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
@@ -99,17 +100,17 @@ def test_path_slash_existent_folder_from_root(monkeypatch, initial_pwd_root):
 
 
 def test_path_dot_existent_folder_from_root(monkeypatch, initial_pwd_non_root):
-    contents = [
-        gditem.GDItem.folder('/grapafolder/parentfolder/currentfolder/folder1',
-                             ['root', 'granpafolderid', 'parentfolderid', 
-                              'currentfolderid', 'folder1id'])]
+    contents = [[
+        gditem.GDItem.folder('/granpafolder/parentfolder/currentfolder/folder1',
+                             ['root', 'granpafolderid', 'parentfolderid',
+                              'currentfolderid', 'folder1id'])]]
     fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = './folder1'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
     expected_item = gditem.GDItem.folder(
-        '/grapafolder/parentfolder/currentfolder/folder1',
-        ['root', 'granpafolderid', 'parentfolderid', 
+        '/granpafolder/parentfolder/currentfolder/folder1',
+        ['root', 'granpafolderid', 'parentfolderid',
          'currentfolderid', 'folder1id']
     )
     expected_msg = ''
@@ -120,7 +121,8 @@ def test_path_dot_existent_folder_from_root(monkeypatch, initial_pwd_non_root):
 def test_path_dot(initial_pwd_non_root):
     given = '.'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'currentfolderid'
+    expected_item = gditem.GDItem.folder('/granpafolder/parentfolder/currentfolder',
+                                         ['root', 'granpafolderid', 'parentfolderid', 'currentfolderid'])
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
@@ -129,7 +131,8 @@ def test_path_dot(initial_pwd_non_root):
 def test_path_dot_slash(initial_pwd_non_root):
     given = './'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'currentfolderid'
+    expected_item = gditem.GDItem.folder('/granpafolder/parentfolder/currentfolder',
+                                         ['root', 'granpafolderid', 'parentfolderid', 'currentfolderid'])
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
@@ -138,7 +141,8 @@ def test_path_dot_slash(initial_pwd_non_root):
 def test_path_dot_slash_repeated(initial_pwd_non_root):
     given = '././././.'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'currentfolderid'
+    expected_item = gditem.GDItem.folder('/granpafolder/parentfolder/currentfolder',
+                                         ['root', 'granpafolderid', 'parentfolderid', 'currentfolderid'])
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
@@ -147,7 +151,8 @@ def test_path_dot_slash_repeated(initial_pwd_non_root):
 def test_path_parent(initial_pwd_non_root):
     given = '..'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'parentfolderid'
+    expected_item = gditem.GDItem.folder('/granpafolder/parentfolder',
+                                         ['root', 'granpafolderid', 'parentfolderid'])
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
