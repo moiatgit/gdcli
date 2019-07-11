@@ -252,17 +252,15 @@ def test_path_parent_replacing_folder_in_given(monkeypatch, initial_pwd_non_root
 
 def test_path_slash_existent_existent_folder(monkeypatch, initial_pwd_root):
     contents = [
-        [ {'name': 'folder1', 'id': 'id1',
-           'mimeType': 'application/vnd.google-apps.folder'}],
-        [ {'name': 'folder2', 'id': 'id2',
-           'mimeType': 'application/vnd.google-apps.folder'}],
+        [ gditem.GDItem.folder('/folder1', ['root', 'folder1id'])],
+        [ gditem.GDItem.folder('/folder1/folder2', ['root', 'folder1id', 'folder2id'])],
     ]
 
     fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/folder1/folder2'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'id2'
+    expected_item = gditem.GDItem.folder('/folder1/folder2', ['root', 'folder1id', 'folder2id'])
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
