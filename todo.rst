@@ -16,7 +16,13 @@ Current problem:
 
   Further tasks will involve to get pwd as a GDItem
 
-- rename path_to_gd() to named_path_to_gditem()
+- (done) rename path_to_gd() to named_path_to_gditem()
+
+- There're some non yet converted tests for path
+
+- There're also two new tests to be defined. They have to do with the fact that it is possible to get two files with the same name in GD.
+  It will require to decide whether to present everything, which one to keep (for mimeType decisions)
+  It will also make more complex ls and make it more appealing to require ls path/to/folder/ end by slash if user wants to list folder contents
 
 
 
