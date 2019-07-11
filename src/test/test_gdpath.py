@@ -278,16 +278,12 @@ def test_path_slash_existent_existent_file(monkeypatch, initial_pwd_root):
 
 
 def test_path_slash_existent_dot_parent(monkeypatch, initial_pwd_root):
-    contents = [
-        [ {'name': 'folder1', 'id': 'id1',
-           'mimeType': 'application/vnd.google-apps.folder'}],
-    ]
-
+    contents = []
     fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/folder1/./..'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = 'root'
+    expected_item = gditem.GDItem.root()
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
@@ -304,7 +300,7 @@ def test_path_slash_existent_nonexistent(monkeypatch, initial_pwd_root):
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/folder1/nonexistentfile'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = ''
+    expected_item = None
     expected_msg = 'not found: nonexistentfile'
     assert expected_item == path_id
     assert expected_msg == error_message
