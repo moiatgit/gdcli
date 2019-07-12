@@ -7,14 +7,21 @@ Currently
 
 Current problem:
 
-- (done) testing the rest of already defined tests
-
 - names in GD can contain / so it doesn't work when trying to split by slash
-  proposal 1: sanitize names
-  proposal 2: store all item names in a list and use paths with its position
+  proposal 1: store all item names in a list and use paths with its position
               session names
+  proposal 2: sanitize names
+              unfortunately GD names can contain any character (not checked)
+              let's try first the prev proposal
   proposal 3: use os.path.dirname -> maybe not so efficient but it doesn't require any text manipulation
               it doesn't work since you need to enclose names within quotes
+
+  Now: I'm trying proposal 1
+
+  gdcore._gdcontents_to_gditem() seems to not generate GDItem with full path.
+  It must be created a test_gdcore mocking the API calls. In fact, they're already encapsulated in just one
+  method gdcore._get_items() so you just have to mock this one. Get sure you check the args of the call
+  so they correspond to the expected query and folder
 
 To Do List
 ==========

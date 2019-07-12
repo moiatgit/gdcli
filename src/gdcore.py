@@ -11,9 +11,7 @@ from googleapiclient.discovery import build
 import gdconstants
 import gdconfig
 import gditem
-
-# a sort of singleton containing the Google Drive driver once authenticated
-_DRIVER = None
+import gdsession
 
 def authenticate(token, client_secrets, scopes):
     """ performs the authentication and returns the service,
@@ -33,27 +31,55 @@ def authenticate(token, client_secrets, scopes):
 
 def get_driver():
     """ returns a driver connected to the service
-        It has into account the settings in GDConfig """
-    global _DRIVER
-    if not _DRIVER:
+        It will construct the driver once in this session, so it will store in
+        Session
+        It has into account the settings in GDConfig.
+    """
+    if not gdsession.Session.is_driver():
         config = gdconfig.GDConfig()
-        _DRIVER = authenticate(
+        driver = authenticate(
             config['token_path'],
             config['client_secrets_path'],
             config['scopes'])
-    return _DRIVER
+        gdsession.Session.set_driver(driver)
+    return gdsession.Session.get_driver()
 
 
 def _gdcontents_to_gditem(contents, folder):
     """ given a response of a Google Drive query, it return the list
         of GDItem contained in the 'files' entry if present
+
+        Some considerations:
+        - new names are stored at Session
+        - names are translated to its representation according to Session
+
         @param contents: a dict as return by a query to Google Driver
         @param folder: a GDItem such that folder.is_folder() == True
+        @return list[GDItem]
     """
-    return [gditem.GDItem(os.path.join(folder['namedPath'], item['name']),
-                          folder['idPath'] + [item['id']],
-                          item['mimeType']) for item in contents.get('files', [])]
+    items = []
+    for raw_item in contents.get('files', []):
+        name = raw_item['name']
+        representation = gdsession.Session.add_name(name)
+        item = gditem.GDItem(
+            os.path.join(folder['namedPath'], representation),
+            folder['idPath'] + [raw_item['id']],
+            raw_item['mimeType'])
+        items.append(item)
+        print("XXX gdcore._gdcontents_to_gditem() adding item", item)
+        print("XXX\tfrom raw", raw_item)
+    return items
 
+
+def _get_items(query, folder):
+    """ it returns the contents mathing the query as a list of GDItem """
+    fields = 'files(id,name,mimeType)'
+    result = get_driver().files().list(
+        q=query,
+        spaces='drive',
+        fields=fields
+    ).execute()
+    return _gdcontents_to_gditem(result, folder)
 
 def get_items_by_name(name, folder):
     """ it returns the contents from folder with the given name.
@@ -63,15 +89,9 @@ def get_items_by_name(name, folder):
         @param folder: a GDItem such that folder.is_folder() == True
         @return list[GDItem]
     """
-    print("XXX gdcore.get_items_by_name(name: %s, folder: %s)" % (name, folder))
-    fields = 'files(id,name,mimeType)'
     parent = folder['id']
-    result = get_driver().files().list(
-        q="name='%s' and '%s' in parents and trashed=false" % (name, parent),
-        spaces='drive',
-        fields=fields
-    ).execute()
-    return _gdcontents_to_gditem(result, folder)
+    query = "name='%s' and '%s' in parents and trashed=false" % (name, parent)
+    return _get_items(query, folder)
 
 
 def get_items_by_folder(folder):
@@ -79,14 +99,10 @@ def get_items_by_folder(folder):
         @param folder: a GDItem such that folder.is_folder() == True
         @return list[GDItem]
     """
-    fields = 'files(id,name,mimeType)'
     parent = folder['id']
-    result = get_driver().files().list(
-        q="'%s' in parents and trashed=false" % parent,
-        spaces='drive',
-        fields=fields
-    ).execute()
-    return _gdcontents_to_gditem(result, folder)
+    query = "'%s' in parents and trashed=false" % parent
+    return _get_items(query, folder)
+
 
 if __name__ == "__main__":
     gdconstants.print_error_and_exit('This file is not intended to run alone')

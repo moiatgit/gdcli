@@ -12,14 +12,17 @@ import os
 import gdcore
 import gdpath
 import gdcli_pwd
+import gdsession
 
 
 def item_to_str(item):
-    """ returns a printable representation of the GDItem """
+    """ returns a printable representation of the GDItem,
+        XXX names are recovered from Session
+    """
     full_path = item.full_path()
     if item.is_folder():
         return os.path.join(full_path, '')
-    return full_path
+    return gdsession.Session.get_path_from_representation(full_path)
 
 
 def print_items(folder, files):
