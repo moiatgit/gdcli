@@ -85,3 +85,12 @@ class GDItem(collections.UserDict):
     def is_root(self):
         """ returns true if the item is root """
         return self['id'] == 'root'
+
+
+    def __eq__(self, other):
+        """ two GDItem are equal when all their fields are equal """
+        return self == other
+
+    def __hash__(self):
+        """ the hash of a GDItem is the hash of its namedPath and name """
+        return hash(os.path.join(self['namedPath'], self['name']))
