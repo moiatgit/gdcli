@@ -12,6 +12,9 @@ import gdconstants
 import gdconfig
 import gditem
 
+# a sort of singleton containing the Google Drive driver once authenticated
+_driver = None
+
 def authenticate(token, client_secrets, scopes):
     """ performs the authentication and returns the service,
         Params:
@@ -31,38 +34,13 @@ def authenticate(token, client_secrets, scopes):
 def get_driver():
     """ returns a driver connected to the service
         It has into account the settings in GDConfig """
-    config = gdconfig.GDConfig()
-    driver = authenticate(
-        config['token_path'],
-        config['client_secrets_path'],
-        config['scopes'])
-    return driver
-
-
-def get_list(folder='root'):
-    """ returns the list of files in the given folder
-        @param folder: str containing the Google Drive id of a folder
-    """
-    fields = 'files(id,name,mimeType)'
-    result = get_driver().files().list(
-        q="'%s' in parents and trashed=false" % folder,
-        spaces='drive',
-        fields=fields
-    ).execute()
-    return result['files'] if 'files' in result else []
-
-
-def get_file(filename, folder='root'):
-    """ returns all the files named as filename and stored in folder.
-        Note: Google Drive allows multiple files equally named in the same folder!
-    """
-    fields = 'files(id,name,mimeType)'
-    result = get_driver().files().list(
-        q="name='%s' and '%s' in parents and trashed=false" % (filename, folder),
-        spaces='drive',
-        fields=fields
-    ).execute()
-    return result['files'] if 'files' in result else []
+    if not _driver:
+        config = gdconfig.GDConfig()
+        _driver = authenticate(
+            config['token_path'],
+            config['client_secrets_path'],
+            config['scopes'])
+    return _driver
 
 
 def _gdcontents_to_gditem(contents, gdfolder):

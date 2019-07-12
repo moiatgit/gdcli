@@ -53,7 +53,8 @@ To Do List
 - important optimization
 
   currently, each time gdcli access to GD, it requires authentication!
-  Change it to a singleton or something so it can share the same driver during all the process life!
+  (done) Change it to a singleton or something so it can share the same driver during all the process life!
+  Test it!
 
 - ls has some issues:
 
