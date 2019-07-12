@@ -51,11 +51,9 @@ def print_files(folder, files):
 
 def get_files(path):
     """ gets the files in the corresponding path.
-        If path is a file, it will return just one file if exists.
+        If path corresponds to a folder, it will return its contents.
         @param path: the path to the files to be listed
-        @return: a tuple:
-            items found: the list of items found matching requirements if no error
-            error message: the error message if any
+        @return: a list[GDItem] the list of items found matching requirements
         """
     item_id, error_msg = gdpath.path_to_gd(path)
     if error_msg:

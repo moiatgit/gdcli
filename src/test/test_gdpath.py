@@ -36,8 +36,8 @@ def assert_expected_results(contents, path, expected_items, monkeypatch):
         the expected items to be found, it
         asserts that the items found in GD for this path are the expected ones
     """
-    fake_get_file = utiltests.build_mock_get(contents)
-    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_file)
+    fake_get_items_by_name = utiltests.build_mock_get(contents)
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
 
     items = gdpath.items_from_path(path)
     assert items == expected_items
@@ -63,10 +63,10 @@ def test_path_slash_when_not_on_root(initial_pwd_non_root):
 
 def test_path_non_existing(monkeypatch, initial_pwd_root):
     contents = [[]]
-    fake_get_file = utiltests.build_mock_get(contents,
+    fake_get_items_by_name = utiltests.build_mock_get(contents,
                                              expected_args=('nonexistentfile',),
                                              expected_kwargs={'folder': 'root'})
-    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_file)
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
     path = 'nonexistentfile'
     items = gdpath.items_from_path(path)
     assert not items
@@ -74,10 +74,10 @@ def test_path_non_existing(monkeypatch, initial_pwd_root):
 
 def test_path_dot_non_existing(monkeypatch, initial_pwd_root):
     contents = [[]]
-    fake_get_file = utiltests.build_mock_get(contents,
+    fake_get_items_by_name = utiltests.build_mock_get(contents,
                                              expected_args=('nonexistentfile',),
                                              expected_kwargs={'folder': 'root'})
-    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_file)
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
     path = '/nonexistentfile'
     items = gdpath.items_from_path(path)
     assert not items
@@ -87,8 +87,8 @@ def test_path_slash_existent_folder_from_root(monkeypatch, initial_pwd_root):
     contents = [
         [gditem.GDItem.folder('/folder1', ['root', 'folder1id'])]
     ]
-    fake_get_file = utiltests.build_mock_get(contents)
-    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_file)
+    fake_get_items_by_name = utiltests.build_mock_get(contents)
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
     path = '/folder1'
     expected_item = gditem.GDItem.folder('/folder1', ['root', 'folder1id'])
     items = gdpath.items_from_path(path)

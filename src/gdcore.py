@@ -13,7 +13,7 @@ import gdconfig
 import gditem
 
 # a sort of singleton containing the Google Drive driver once authenticated
-_driver = None
+_DRIVER = None
 
 def authenticate(token, client_secrets, scopes):
     """ performs the authentication and returns the service,
@@ -34,55 +34,57 @@ def authenticate(token, client_secrets, scopes):
 def get_driver():
     """ returns a driver connected to the service
         It has into account the settings in GDConfig """
-    if not _driver:
+    if not _DRIVER:
         config = gdconfig.GDConfig()
-        _driver = authenticate(
+        _DRIVER = authenticate(
             config['token_path'],
             config['client_secrets_path'],
             config['scopes'])
-    return _driver
+    return _DRIVER
 
 
-def _gdcontents_to_gditem(contents, gdfolder):
+def _gdcontents_to_gditem(contents, folder):
     """ given a response of a Google Drive query, it return the list
-        of GDItems contained in the 'files' entry if present
+        of GDItem contained in the 'files' entry if present
         @param contents: a dict as return by a query to Google Driver
+        @param folder: a GDItem such that folder.is_folder() == True
     """
-    return [gditem.GDItem(os.path.join(gdfolder['namedPath'], item['name']),
-                          gdfolder['idPath'] + [item['id']],
+    return [gditem.GDItem(os.path.join(folder['namedPath'], item['name']),
+                          folder['idPath'] + [item['id']],
                           item['mimeType']) for item in contents.get('files', [])]
 
 
-def get_items_by_name(name, gdfolder):
-    """ it returns the contents from gdfolder with the given name.
+def get_items_by_name(name, folder):
+    """ it returns the contents from folder with the given name.
         Note: Google Drive allows multiple files equally named in the same folder!
 
         @param name: str defining the name of the item to find
-        @param gdfolder: a GDItem such that gdfolder.is_folder() == True
+        @param folder: a GDItem such that folder.is_folder() == True
         @return list[GDItem]
     """
     fields = 'files(id,name,mimeType)'
-    parent = gdfolder['id']
+    parent = folder['id']
     result = get_driver().files().list(
         q="name='%s' and '%s' in parents and trashed=false" % (name, parent),
         spaces='drive',
         fields=fields
     ).execute()
-    return _gdcontents_to_gditem(result, gdfolder)
+    return _gdcontents_to_gditem(result, folder)
 
-def get_items_by_folder(gdfolder):
-    """ it returns the contents from gdfolder
-        @param gdfolder: a GDItem such that gdfolder.is_folder() == True
+
+def get_items_by_folder(folder):
+    """ it returns the contents from folder
+        @param folder: a GDItem such that folder.is_folder() == True
         @return list[GDItem]
     """
     fields = 'files(id,name,mimeType)'
-    parent = gdfolder['id']
+    parent = folder['id']
     result = get_driver().files().list(
         q="'%s' in parents and trashed=false" % parent,
         spaces='drive',
         fields=fields
     ).execute()
-    return _gdcontents_to_gditem(result, gdfolder)
+    return _gdcontents_to_gditem(result, folder)
 
 if __name__ == "__main__":
     gdconstants.print_error_and_exit('This file is not intended to run alone')

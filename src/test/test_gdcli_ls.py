@@ -13,6 +13,7 @@
 import pytest
 import gdcore
 import gdstatus
+import gditem
 import gdcli_ls
 import utiltests
 
@@ -43,13 +44,13 @@ def initial_pwd(monkeypatch):
 def test_ls_path_root(monkeypatch):
     path = '/'
     contents = [
-        [ {'name': 'file1', 'id': 'id1',
-         'mimeType': 'application/vnd.google-apps.folder'},
-        {'name': 'file2', 'id': 'id2',
-         'mimeType': 'application/vnd.google-apps.folder'},],
+        [
+            gditem.GDItem.folder('/file1', ['root', 'file1id']),
+            gditem.GDItem.folder('/file2', ['root', 'file2id']),
+        ]
     ]
     fake_get_list = utiltests.build_mock_get(contents)
-    monkeypatch.setattr(gdcore, 'get_list', fake_get_list)
+    monkeypatch.setattr(gdcore, 'get_items_by_folder', fake_get_list)
     files, error_message = gdcli_ls.get_files(path)
     assert contents[0] == files
     assert '' == error_message
