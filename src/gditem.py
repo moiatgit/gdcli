@@ -6,6 +6,7 @@
     It behaves as a dict but includes some specific aiding functions
 """
 
+import os
 import collections
 import gdconstants
 
@@ -85,11 +86,6 @@ class GDItem(collections.UserDict):
     def is_root(self):
         """ returns true if the item is root """
         return self['id'] == 'root'
-
-
-    def __eq__(self, other):
-        """ two GDItem are equal when all their fields are equal """
-        return self == other
 
     def __hash__(self):
         """ the hash of a GDItem is the hash of its namedPath and name """
