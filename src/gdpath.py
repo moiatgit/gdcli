@@ -11,7 +11,7 @@ import gditem
 import gdcore
 
 
-def _process_path_items(former_path_items, partial_id_path, final_path):
+def _process_path_items(former_path_items, partial_id_path, partial_named_path, final_path):
     """ given a list of items to process, and the partial id_path
         it tries to complete path_items to construct matching GDItem
 
@@ -21,13 +21,16 @@ def _process_path_items(former_path_items, partial_id_path, final_path):
     found = []
     path_items = former_path_items[:]
     current = path_items.pop(0)
-    gd_items = gdcore.get_items_by_name(current, folder=partial_id_path[-1])
+    print("XXXgdpath._process_path_items path_items", path_items)
+    folder = gditem.GDItem.folder(partial_named_path, partial_id_path)
+    gd_items = gdcore.get_items_by_name(current, folder=folder)
     for gdi in gd_items:
         id_path = partial_id_path[:] + [gdi['id']]
         if path_items:
             if not gdi.is_folder():
                 continue
-            found += _process_path_items(path_items, id_path, final_path)
+            named_path = os.path.join(partial_named_path, gdi.full_path())
+            found += _process_path_items(path_items, id_path, named_path, final_path)
         else:
             mime_type = gdi['mimeType']
             new_item = gditem.GDItem(final_path, id_path, mime_type)
@@ -40,6 +43,7 @@ def items_from_path(path):
         sets keys 'translationOK', 'items' and 'errorMessage'
         accordingly
     """
+    print("XXX gdpath.items_from_path(path: %s)" % path)
     path = os.path.normpath(path)
 
     # trivial cases
@@ -69,7 +73,6 @@ def items_from_path(path):
 
     # correct final path from pwd
     if not path.startswith('/'):
-        print("XXX gdpath.items_from_path() before computing final_path. pwd %s, path %s" % (pwd, path))
         final_path = os.path.join(pwd, path) if path else pwd
     else:
         final_path = path
@@ -78,4 +81,4 @@ def items_from_path(path):
     if not path_items:
         return [gditem.GDItem.folder(final_path, id_path)]
 
-    return _process_path_items(path_items, id_path, final_path)
+    return _process_path_items(path_items, id_path, pwd, final_path)

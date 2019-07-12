@@ -74,7 +74,13 @@ class GDItem(collections.UserDict):
             assert id_path == ['root'], "when named_path is /, id_path must be ['root']"
         else:
             split_path = named_path.split('/')
-            assert len(split_path) == len(id_path), "named and id paths lengths must match"
+            assert len(split_path) == len(id_path), ("named and id paths lengths must match, but\n"
+                                                     "named path: %s (%s items)\n"
+                                                     "id path   : %s (%s items)\n") % (
+                                                         named_path,
+                                                         len(split_path),
+                                                         id_path,
+                                                         len(id_path))
             assert '.' not in split_path, "named path shouldn't contain a step '.'"
             assert '..' not in split_path, "named path shouldn't contain a step '..'"
 

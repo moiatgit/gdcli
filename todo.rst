@@ -7,16 +7,19 @@ Currently
 
 Current problem:
 
-- (done) GDItem is unhashable but I need it to be hashable to I can compare results in different orders
-  proposal: change GDItem implementation so
-            implement __eq__() that requires all the fields to be equal
-            implement __hash__() that just requires name and named_path strings (in a join is ok)
+- (done) testing the rest of already defined tests
 
+- names in GD can contain / so it doesn't work when trying to split by slash
+  proposal 1: sanitize names
+  proposal 2: store all item names in a list and use paths with its position
+              session names
+  proposal 3: use os.path.dirname -> maybe not so efficient but it doesn't require any text manipulation
+              it doesn't work since you need to enclose names within quotes
 
 To Do List
 ==========
 
-- Further tasks will involve to get pwd as a GDItem
+- (done) Further tasks will involve to get pwd as a GDItem
 
 - consider moving gdpath.items_from_path to gdcore
 
@@ -146,6 +149,7 @@ To Do List
 
 - add color to the output (e.g. {.doc} could appear in a different color when ls
 
+- consider if gdconstants is a proper name for a bunch of constants PLUS some utilitiy methods
 
 Future
 ======

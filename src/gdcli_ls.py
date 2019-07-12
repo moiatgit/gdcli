@@ -8,12 +8,10 @@
 
 import sys
 import os
-import json
 
 import gdcore
 import gdpath
 import gdcli_pwd
-from gdconstants import print_warning
 
 
 def item_to_str(item):
@@ -24,7 +22,7 @@ def item_to_str(item):
     return full_path
 
 
-def print_files(folder, files):
+def print_items(folder, files):
     """ pretty prints the files """
     print("\nfolder: ", end='')
     if folder == '.':
@@ -57,12 +55,9 @@ def do_ls(argv):
     if not argv:
         argv = ['.']
     print('Google Driver CLI: ls')
-    for item in argv:
-        files, error_msg = get_files(item)
-        if error_msg:
-            print_warning(error_msg)
-            continue
-        print_files(item, files)
+    for arg in argv:
+        items = get_files(arg)
+        print_items(arg, items)
 
 
 def main():

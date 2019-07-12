@@ -65,7 +65,7 @@ def test_path_non_existing(monkeypatch, initial_pwd_root):
     contents = [[]]
     fake_get_items_by_name = utiltests.build_mock_get(contents,
                                              expected_args=('nonexistentfile',),
-                                             expected_kwargs={'folder': 'root'})
+                                             expected_kwargs={'folder': gditem.GDItem.root()})
     monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
     path = 'nonexistentfile'
     items = gdpath.items_from_path(path)
@@ -76,7 +76,7 @@ def test_path_dot_non_existing(monkeypatch, initial_pwd_root):
     contents = [[]]
     fake_get_items_by_name = utiltests.build_mock_get(contents,
                                              expected_args=('nonexistentfile',),
-                                             expected_kwargs={'folder': 'root'})
+                                             expected_kwargs={'folder': gditem.GDItem.root()})
     monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
     path = '/nonexistentfile'
     items = gdpath.items_from_path(path)

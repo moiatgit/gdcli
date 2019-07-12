@@ -34,6 +34,7 @@ def authenticate(token, client_secrets, scopes):
 def get_driver():
     """ returns a driver connected to the service
         It has into account the settings in GDConfig """
+    global _DRIVER
     if not _DRIVER:
         config = gdconfig.GDConfig()
         _DRIVER = authenticate(
@@ -62,6 +63,7 @@ def get_items_by_name(name, folder):
         @param folder: a GDItem such that folder.is_folder() == True
         @return list[GDItem]
     """
+    print("XXX gdcore.get_items_by_name(name: %s, folder: %s)" % (name, folder))
     fields = 'files(id,name,mimeType)'
     parent = folder['id']
     result = get_driver().files().list(
