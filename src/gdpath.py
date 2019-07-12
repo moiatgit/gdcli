@@ -69,6 +69,7 @@ def items_from_path(path):
 
     # correct final path from pwd
     if not path.startswith('/'):
+        print("XXX gdpath.items_from_path() before computing final_path. pwd %s, path %s" % (pwd, path))
         final_path = os.path.join(pwd, path) if path else pwd
     else:
         final_path = path
