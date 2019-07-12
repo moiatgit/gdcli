@@ -21,7 +21,7 @@ def _process_path_items(former_path_items, partial_id_path, final_path):
     found = []
     path_items = former_path_items[:]
     current = path_items.pop(0)
-    gd_items = gdcore.get_file(current, folder=partial_id_path[-1])
+    gd_items = gdcore.get_items_by_name(current, folder=partial_id_path[-1])
     for gdi in gd_items:
         id_path = partial_id_path[:] + [gdi['id']]
         if path_items:

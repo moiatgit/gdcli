@@ -39,7 +39,7 @@ Current problem:
   It will require to decide whether to present everything, which one to keep (for mimeType decisions)
   It will also make more complex ls and make it more appealing to require ls path/to/folder/ end by slash if user wants to list folder contents
 
-- replace calls to old query methods on gdcore to the new ones (e.g. get_file() to get_items_by_name())
+- (done) replace calls to old query methods on gdcore to the new ones (e.g. get_file() to get_items_by_name())
   Start with test_gdpath
 
 - Further tasks will involve to get pwd as a GDItem

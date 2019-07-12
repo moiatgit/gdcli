@@ -65,7 +65,7 @@ def get_file(filename, folder='root'):
     return result['files'] if 'files' in result else []
 
 
-def gdcontents_to_gditem(contents, gdfolder):
+def _gdcontents_to_gditem(contents, gdfolder):
     """ given a response of a Google Drive query, it return the list
         of GDItems contained in the 'files' entry if present
         @param contents: a dict as return by a query to Google Driver
@@ -90,7 +90,7 @@ def get_items_by_name(name, gdfolder):
         spaces='drive',
         fields=fields
     ).execute()
-    return gdcontents_to_gditem(result, gdfolder)
+    return _gdcontents_to_gditem(result, gdfolder)
 
 def get_items_by_folder(gdfolder):
     """ it returns the contents from gdfolder
@@ -104,19 +104,7 @@ def get_items_by_folder(gdfolder):
         spaces='drive',
         fields=fields
     ).execute()
-    return gdcontents_to_gditem(result, gdfolder)
-
-
-
-def is_folder(filespec):
-    """ returns true if filespec specifies a folder
-        @param filespec: is one file representation obtained from the driver.
-                         It is a dict
-        In case filespec doesn't contain key 'mimeType', it returns False
-    """
-    if not 'mimeType' in filespec:
-        return False
-    return filespec['mimeType'] == 'application/vnd.google-apps.folder'
+    return _gdcontents_to_gditem(result, gdfolder)
 
 if __name__ == "__main__":
     gdconstants.print_error_and_exit('This file is not intended to run alone')
