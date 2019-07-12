@@ -25,42 +25,42 @@ def initial_pwd_non_root(monkeypatch):
         'pwd':     '/granpafolder/parentfolder/currentfolder',
         'pwd_id': ['root', 'granpafolderid', 'parentfolderid', 'currentfolderid']
     }
-    print("XXX YYY initial pwd", contents)
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
 
 
-def test_path_slash_when_on_root(initial_pwd_root):
+def test_gdpath_slash_when_on_root(initial_pwd_root):
     given = '/'
-    obtained_item, error_message = gdpath.named_path_to_gd_item(given)
     expected_item = gditem.GDItem.root()
-    assert obtained_item == expected_item
-    assert len(error_message) == 0
+    gdp = gdpath.GDPath(given)
+
+    assert gdp['translationOK']
+    assert 'errorMessage' not in gdp
+    assert len(gdp['items']) == 1
+    assert gdp['items'][0] == expected_item
 
 
-def test_path_slash_when_not_on_root(initial_pwd_non_root):
+def test_gdpath_slash_when_not_on_root(initial_pwd_non_root):
     given = '/'
-    obtained_item, error_message = gdpath.named_path_to_gd_item(given)
     expected_item = gditem.GDItem.root()
-    assert obtained_item == expected_item
-    assert len(error_message) == 0
+    gdp = gdpath.GDPath(given)
+
+    assert gdp['translationOK']
+    assert 'errorMessage' not in gdp
+    assert len(gdp['items']) == 1
+    assert gdp['items'][0] == expected_item
 
 
-def test_path_non_existing(monkeypatch, initial_pwd_root):
-    contents = []
-
-    def fake_get_file(filename, folder=None):
-        print("XXX fake_get_file(filename: %s, folder: %s)" % (filename, folder))
-        assert folder == 'root'
-        assert filename == 'nonexistentfile'
-        return contents
-
+def test_gdpath_non_existing(monkeypatch, initial_pwd_root):
+    contents = [[]]
+    fake_get_file = utiltests.build_mock_get(contents, expected_args=('nonexistentfile',), expected_kwargs={'folder': 'root'})
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = 'nonexistentfile'
-    path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = None
     expected_msg = 'not found: %s' % given
-    assert expected_item == path_id
-    assert expected_msg == error_message
+    gdp = gdpath.GDPath(given)
+
+    assert not gdp['translationOK']
+    assert not 'items' in gdp
+    assert gdp['errorMessage'] == expected_msg
 
 
 def test_path_dot_non_existing(monkeypatch, initial_pwd_root):
@@ -335,11 +335,32 @@ def test_path_more_than_one_file_with_same_name_in_same_folder():
     assert expected_msg == error_message
 
 def test_path_two_folders_with_same_name_one_with_required_file_and_the_other_without():
+    contents = [
+#       '/folder1(1)/file1.jpg',
+#       '/folder1(2)/file2.jpg'
+        [
+            gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id1', 'img1jpgid'], 'image/jpeg'),
+            gditem.GDItem('/folder1/img2.jpg', ['root', 'folder1id2', 'img2jpgid'], 'image/jpeg')
+        ],
+    ]
     assert False
 
 def test_path_two_folders_with_same_name_both_with_required_file():
+    contents = [
+#       '/folder1(1)/file1.jpg',
+#       '/folder1(2)/file1.jpg'
+        [
+            gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id1', 'img1jpgid'], 'image/jpeg'),
+            gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id2', 'img2jpgid'], 'image/jpeg')
+        ],
+    ]
     assert False
 
 def test_path_a_file_and_a_folder_with_same_name_is_same_folder():
-    print("XXX This should decide some order. For example, first folders. Otherwise, mimeType could not match at testing time")
+    contents = [
+        [
+            gditem.GDItem('/folder1/theitem', ['root', 'folder1id', 'theitemid1'], 'image/jpeg'),
+            gditem.GDItem.folder('/folder1/theitem', ['root', 'folder1id', 'theitemid2']),
+        ]
+    ]
     assert False

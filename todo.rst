@@ -17,11 +17,12 @@ Current problem:
 
   For this reason, the following changes must be considered:
 
-  - recursive gdpath.named_path_to_gditem()
-
   - gdpath.named_path_to_gditem() must return (list[GDItem], msg)
 
-  - for coherence, consider results as a dict with keys 'errorMessage' and 'items'
+  - recursive gdpath.named_path_to_gditem()
+
+  - for simplicity, there will be considered only one type of error: no items found
+    That implies no GDPath is required
 
 - (done) there's a problem with gdpath: it returns the item id only but I'd need
   also whether it is a folder or not.
