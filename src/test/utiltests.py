@@ -14,12 +14,13 @@ def build_mock_get(contents, expected_args=None, expected_kwargs=None):
 
     def mock_get(*args, **kwargs):
         nonlocal gen
+        print("XXXYYY: mock args %s kwargs %s" % (args, kwargs))
         if expected_args:
             assert args == expected_args, "Expected args %s but found %s" % (args, expected_args)
         if expected_kwargs:
             assert kwargs == expected_kwargs, "Expected kwargs %s but found %s" % (kwargs, expected_kwargs)
-        return next(gen)
+        result = next(gen)
+        print("XXXYYY\tresult", result)
+        return result
 
     return mock_get
-
-

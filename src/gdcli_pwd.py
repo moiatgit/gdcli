@@ -27,7 +27,6 @@ def get_pwd_id_path():
 def get_pwd_gditem():
     """ returns the current working directory as a GDItem """
     status = gdstatus.get_status()
-    print("XXX ZZZ gdcli_pwd.get_pwd_gditem() status", status)
     return gditem.GDItem.folder(status['pwd'], status['pwd_id'])
 
 def do_pwd(argv):

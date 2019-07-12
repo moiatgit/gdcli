@@ -7,7 +7,7 @@ Currently
 
 Current problem:
 
-- since it is possible that more of one entry has the same name in the same folder, it is also possible that:
+- (done) since it is possible that more of one entry has the same name in the same folder, it is also possible that:
 
   - there's a folder and a file equally named and the folder contains the required file. So I must search on every possible folder
 
@@ -17,11 +17,11 @@ Current problem:
 
   For this reason, the following changes must be considered:
 
-  - gdpath.named_path_to_gditem() must return (list[GDItem], msg)
+  - (done) gdpath.named_path_to_gditem() must return (list[GDItem], msg)
 
-  - recursive gdpath.named_path_to_gditem()
+  - (done) recursive gdpath.named_path_to_gditem()
 
-  - for simplicity, there will be considered only one type of error: no items found
+  - (done) for simplicity, there will be considered only one type of error: no items found
     That implies no GDPath is required
 
 - (done) there's a problem with gdpath: it returns the item id only but I'd need
@@ -33,9 +33,9 @@ Current problem:
 
 - (done) rename path_to_gd() to named_path_to_gditem()
 
-- There're some non yet converted tests for path
+- (done) There're some non yet converted tests for path
 
-- There're also two new tests to be defined. They have to do with the fact that it is possible to get two files with the same name in GD.
+- (done) There're also two new tests to be defined. They have to do with the fact that it is possible to get two files with the same name in GD.
   It will require to decide whether to present everything, which one to keep (for mimeType decisions)
   It will also make more complex ls and make it more appealing to require ls path/to/folder/ end by slash if user wants to list folder contents
 
@@ -44,6 +44,7 @@ Current problem:
 
 - Further tasks will involve to get pwd as a GDItem
 
+- consider moving gdpath.items_from_path to gdcore
 
 
 To Do List

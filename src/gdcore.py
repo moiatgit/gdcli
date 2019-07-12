@@ -43,7 +43,6 @@ def get_list(folder='root'):
     """ returns the list of files in the given folder
         @param folder: str containing the Google Drive id of a folder
     """
-    print("XXX IT SHOUDLN'T BE CALL NOW!")
     fields = 'files(id,name,mimeType)'
     result = get_driver().files().list(
         q="'%s' in parents and trashed=false" % folder,
@@ -57,7 +56,6 @@ def get_file(filename, folder='root'):
     """ returns all the files named as filename and stored in folder.
         Note: Google Drive allows multiple files equally named in the same folder!
     """
-    print("XXX IT SHOUDLN'T BE CALL NOW!")
     fields = 'files(id,name,mimeType)'
     result = get_driver().files().list(
         q="name='%s' and '%s' in parents and trashed=false" % (filename, folder),
