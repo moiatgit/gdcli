@@ -55,21 +55,14 @@ def get_files(path):
         @param path: the path to the files to be listed
         @return: a list[GDItem] the list of items found matching requirements
         """
-    item_id, error_msg = gdpath.path_to_gd(path)
-    if error_msg:
-        return ([], error_msg)
-    if gdcore.is_folder(item_id):
-        """
-        XXX the problem is that gdpath.path_to_gd() is not returning if the item is a folder or not
-        once known, it should call gdcore.get_list() only when item_id is sure to belong to a folder
-        """
-        pass
-    files = gdcore.get_list(item_id)
-    if files:
-        return (files, '')
-    error_msg = 'No files found for %s' % path
-    return ([], error_msg)
-
+    found = []
+    items = gdpath.items_from_path(path)
+    for item in items:
+        if item.is_folder():
+            found += gdcore.get_items_by_folder(item)
+        else:
+            found.append(item)
+    return found
 
 def do_ls(argv):
     """ lists contents in Google Driver

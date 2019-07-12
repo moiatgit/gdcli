@@ -28,8 +28,8 @@ def initial_pwd_root(monkeypatch):
 @pytest.fixture()
 def initial_pwd_non_root(monkeypatch):
     contents = {
-        'pwd': ['', 'granpafolder', 'parentfolder', 'currentfolder'],
-        'pwd_id': ['root', 'granpafolderid', 'parentfolderid', 'currentfolderid']
+        'pwd':     '/folder_a/folder_b/folder_c',
+        'pwd_id': ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
 
@@ -41,45 +41,43 @@ def initial_pwd(monkeypatch):
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
 
+
 def test_ls_path_root(monkeypatch):
     path = '/'
-    contents = [
+    contents_by_folder = [
         [
-            gditem.GDItem.folder('/file1', ['root', 'file1id']),
-            gditem.GDItem.folder('/file2', ['root', 'file2id']),
+            gditem.GDItem.folder('/folder1', ['root', 'folder1id']),
+            gditem.GDItem.folder('/folder2', ['root', 'folder2id']),
         ]
     ]
-    fake_get_list = utiltests.build_mock_get(contents)
-    monkeypatch.setattr(gdcore, 'get_items_by_folder', fake_get_list)
-    files, error_message = gdcli_ls.get_files(path)
-    assert contents[0] == files
-    assert '' == error_message
-
-def test_ls_get_files_path_is_existing_file(monkeypatch):
-    path = '/granpafolder/parentfolder/currentfolder/file1.jpg'
-    contents_file = [
-        [
-            {'name': 'granpafolder', 'id': 'granpafolderid',
-             'mimeType': 'application/vnd.google-apps.folder'}
-        ],
-        [
-            {'name': 'parentfolder', 'id': 'parentfolderid',
-             'mimeType': 'application/vnd.google-apps.folder'},
-         ],
-        [
-            {'name': 'currentfolder', 'id': 'currentfolderid',
-             'mimeType': 'application/vnd.google-apps.folder'},
-         ],
-        [ {'name': 'file1.jpg', 'id': 'file1id',
-           'mimeType': 'image/jpeg'}],
+    expected_items = [
+            gditem.GDItem.folder('/folder1', ['root', 'folder1id']),
+            gditem.GDItem.folder('/folder2', ['root', 'folder2id']),
     ]
-    contents_list = []
+    fake_get_items_by_folder = utiltests.build_mock_get(contents_by_folder)
+    monkeypatch.setattr(gdcore, 'get_items_by_folder', fake_get_items_by_folder)
+    items = gdcli_ls.get_files(path)
+    assert items == expected_items
 
-    fake_get_file = utiltests.build_mock_get(contents_file)
-    monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
-    fake_get_list = utiltests.build_mock_get(contents_list)
-    monkeypatch.setattr(gdcore, 'get_list', fake_get_list)
-    files, error_message = gdcli_ls.get_files(path)
-    assert [] == files
-    assert '' == error_message
 
+def test_ls_path_to_non_folder_file(monkeypatch):
+    path = '/img.jpg'
+    contents_by_name = [
+        [gditem.GDItem('/img.jpg', ['root', 'imgjpgid'], 'image/jpeg')]
+    ]
+    expected_items = [
+        gditem.GDItem('/img.jpg', ['root', 'imgjpgid'], 'image/jpeg')
+    ]
+    fake_get_items_by_name = utiltests.build_mock_get(contents_by_name)
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
+    items = gdcli_ls.get_files(path)
+    assert items == expected_items
+
+"""
+    other tests
+    - ls when it is a folder
+    - ls when a folder and a file with same name
+    - ls when two folders with same name
+
+    test also the printing results
+"""
