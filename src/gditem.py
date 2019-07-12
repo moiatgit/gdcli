@@ -87,6 +87,10 @@ class GDItem(collections.UserDict):
         """ returns true if the item is root """
         return self['id'] == 'root'
 
+    def full_path(self):
+        """ returns the full path to the item, including its name """
+        return os.path.join(self['namedPath'], self['name'])
+
     def __hash__(self):
         """ the hash of a GDItem is the hash of its namedPath and name """
         return hash(os.path.join(self['namedPath'], self['name']))

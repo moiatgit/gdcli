@@ -7,6 +7,7 @@
 """
 
 import sys
+import os
 import json
 
 import gdcore
@@ -15,26 +16,12 @@ import gdcli_pwd
 from gdconstants import print_warning
 
 
-_MIMETYPE_TO_EXTENSION_MAPPINGS = {
-    'application/msword': 'msword',
-    'application/pdf': 'pdf',
-    'application/vnd.google-apps.document': 'document',
-    'application/vnd.google-apps.folder': 'folder',
-    'application/vnd.google-apps.form': 'form',
-    'application/vnd.google-apps.spreadsheet': 'spreadsheet',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'gmldocument',
-    'image/jpeg': 'jpeg',
-}
-
-
-def print_file(filespec):
-    """ pretty prints the file spec """
-    if 'fileExtension' in filespec:
-        extension = ''
-    else:
-        extension = '{.%s}' % _MIMETYPE_TO_EXTENSION_MAPPINGS.get(filespec['mimeType'], 'unknown')
-    size = '%s bytes' % filespec['size'] if 'size' in filespec else ''
-    print('\t%s%s %s' % (filespec['name'], extension, size))
+def item_to_str(item):
+    """ returns a printable representation of the GDItem """
+    full_path = item.full_path()
+    if item.is_folder():
+        return os.path.join(full_path, '')
+    return full_path
 
 
 def print_files(folder, files):
@@ -45,7 +32,7 @@ def print_files(folder, files):
     else:
         print(folder)
     for item in files:
-        print_file(item)
+        print('\t%s' % item_to_str(item))
     print('total files: %s' % len(files))
 
 

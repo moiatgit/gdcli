@@ -7,7 +7,7 @@ Currently
 
 Current problem:
 
-- GDItem is unhashable but I need it to be hashable to I can compare results in different orders
+- (done) GDItem is unhashable but I need it to be hashable to I can compare results in different orders
   proposal: change GDItem implementation so
             implement __eq__() that requires all the fields to be equal
             implement __hash__() that just requires name and named_path strings (in a join is ok)
@@ -25,6 +25,8 @@ To Do List
   currently, each time gdcli access to GD, it requires authentication!
   (done) Change it to a singleton or something so it can share the same driver during all the process life!
   Test it!
+
+- gdcli_ls consider moving _MIMETYPE_TO_EXTENSION_MAPPINGS to a configuration file so it can get updated without reprogramming
 
 - gditem.proper_paths() should conform to other checkings in the standard library
   for example, list.join() calls to _check_arg_types() that, on error,
@@ -103,7 +105,47 @@ To Do List
 - robustness: there's a problem in gdconfig. It could break if a non
   jsonable value is added to a key. Check the XXX in the file
 
-- add color to the output (e.g. {.folder} could appear in a different color when ls
+
+- consider adding type info when ls
+    if item['mimeType'] == 'msword' and not (
+        item['name'].tolower().endswith('doc') or
+            item['name'].tolower().endswith('docx')
+    ):
+        return full_path + '{.doc}'
+
+    _MIMETYPE_TO_EXTENSION_MAPPINGS = {
+        'application/msword': 'msword',
+        'application/pdf': 'pdf',
+        'image/jpeg': 'jpeg',
+
+        'application/vnd.google-apps.audio': 'audio',
+        'application/vnd.google-apps.document': 'Google Docs',
+        'application/vnd.google-apps.drawing': 'Google Drawing',
+        'application/vnd.google-apps.file': 'Google Drive file',
+        'application/vnd.google-apps.folder': 'Google Drive folder',
+        'application/vnd.google-apps.form': 'Google Forms',
+        'application/vnd.google-apps.fusiontable': 'Google Fusion Tables',
+        'application/vnd.google-apps.map': 'Google My Maps',
+        'application/vnd.google-apps.photo': 'Google photo',
+        'application/vnd.google-apps.presentation': 'Google Slides',
+        'application/vnd.google-apps.script': 'Google Apps Scripts',
+        'application/vnd.google-apps.site': 'Google Sites',
+        'application/vnd.google-apps.spreadsheet': 'Google Sheets',
+        'application/vnd.google-apps.unknown': 'unknown',
+        'application/vnd.google-apps.video': 'Google Video',
+        'application/vnd.google-apps.drive-sdk': 'Google 3rd party shortcut',
+    }
+
+    def test_print_item_when_known_extension():
+        item = gditem.GDItem('/one/itemname', ['root', 'oneid', 'itemnameid'],
+                             'application/pdf')
+        expected = '/one/itemname{.pdf}'
+        got = gdcli_ls.item_to_str(item)
+        assert got == expected
+
+
+- add color to the output (e.g. {.doc} could appear in a different color when ls
+
 
 Future
 ======

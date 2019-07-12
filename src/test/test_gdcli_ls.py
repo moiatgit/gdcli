@@ -120,11 +120,40 @@ def test_ls_folder_and_file_with_same_name(monkeypatch, initial_pwd_root):
     assert set(items) == set(expected_items)
 
 
-"""
-    other tests
-    - ls when a folder and a file with same name
-    - ls when two folders with same name
-    - ls relative paths
+def test_ls_two_folders_with_same_name(monkeypatch, initial_pwd_root):
+    path = 'thefolder'
+    contents_by_name = [
+        [
+            gditem.GDItem.folder('/theitem', ['root', 'theitemid1']),
+            gditem.GDItem.folder('/theitem', ['root', 'theitemid2']),
+        ],
+    ]
+    contents_by_folder = [
+        [ gditem.GDItem('/theitem/img1.jpg', ['root', 'theitemid1', 'img1jpgid'], 'image/jpeg')],
+        [ gditem.GDItem('/theitem/img2.jpg', ['root', 'theitemid2', 'img2jpgid'], 'image/jpeg')],
+    ]
+    expected_items = [
+        gditem.GDItem('/theitem/img1.jpg', ['root', 'theitemid1', 'img1jpgid'], 'image/jpeg'),
+        gditem.GDItem('/theitem/img2.jpg', ['root', 'theitemid2', 'img2jpgid'], 'image/jpeg'),
+    ]
+    fake_get_items_by_name = utiltests.build_mock_get(contents_by_name)
+    fake_get_items_by_folder = utiltests.build_mock_get(contents_by_folder)
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
+    monkeypatch.setattr(gdcore, 'get_items_by_folder', fake_get_items_by_folder)
+    items = gdcli_ls.get_files(path)
+    assert set(items) == set(expected_items)
 
-    test also the printing results
-"""
+
+def test_print_item_when_folder():
+    item = gditem.GDItem.folder('/one/folder', ['root', 'oneid', 'folderid'])
+    expected = '/one/folder/'
+    got = gdcli_ls.item_to_str(item)
+    assert got == expected
+
+def test_print_item_when_unknown_type():
+    item = gditem.GDItem('/one/itemname', ['root', 'oneid', 'itemnameid'],
+                         'application/vnd.google-apps.unknown')
+    expected = '/one/itemname'
+    got = gdcli_ls.item_to_str(item)
+    assert got == expected
+
