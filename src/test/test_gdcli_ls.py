@@ -42,7 +42,7 @@ def initial_pwd(monkeypatch):
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
 
 
-def test_ls_path_root(monkeypatch):
+def test_ls_absolute_path_root(monkeypatch, initial_pwd_root):
     path = '/'
     contents_by_folder = [
         [
@@ -60,7 +60,7 @@ def test_ls_path_root(monkeypatch):
     assert items == expected_items
 
 
-def test_ls_path_to_non_folder_file(monkeypatch):
+def test_ls_absolute_path_to_non_folder_file(monkeypatch, initial_pwd_root):
     path = '/img.jpg'
     contents_by_name = [
         [gditem.GDItem('/img.jpg', ['root', 'imgjpgid'], 'image/jpeg')]
@@ -73,11 +73,34 @@ def test_ls_path_to_non_folder_file(monkeypatch):
     items = gdcli_ls.get_files(path)
     assert items == expected_items
 
+
+def test_ls_path_to_folder(monkeypatch, initial_pwd_root):
+    path = 'folder1'
+    contents_by_name = [
+        [ gditem.GDItem.folder('/folder1', ['root', 'folder1id'])],
+    ]
+    contents_by_folder = [
+        [ gditem.GDItem('/folder1/img1.jpg'. ['root', 'folder1id', 'img1jpgid'], 'image/jpeg'),
+          gditem.GDItem.folder('folder1/folder2', ['root', 'folder1id'¡, 'folder2id'])]
+    ]
+    expected_items = [
+        gditem.GDItem('/folder1/img1.jpg'. ['root', 'folder1id', 'img1jpgid'], 'image/jpeg'),
+        gditem.GDItem.folder('folder1/folder2', ['root', 'folder1id'¡, 'folder2id'])
+    ]
+    fake_get_items_by_name = utiltests.build_mock_get(contents_by_name)
+    fake_get_items_by_folder = utiltests.build_mock_get(contents_by_folder)
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
+    monkeypatch.setattr(gdcore, 'get_items_by_folder', fake_get_items_by_folder)
+    items = gdcli_ls.get_files(path)
+    assert items == expected_items
+
+
 """
     other tests
     - ls when it is a folder
     - ls when a folder and a file with same name
     - ls when two folders with same name
+    - ls relative paths
 
     test also the printing results
 """
