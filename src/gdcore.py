@@ -94,7 +94,7 @@ def get_items_by_name(name, gdfolder):
     ).execute()
     return gdcontents_to_gditem(result, gdfolder)
 
-def get_items_in_folder(gdfolder):
+def get_items_by_folder(gdfolder):
     """ it returns the contents from gdfolder
         @param gdfolder: a GDItem such that gdfolder.is_folder() == True
         @return list[GDItem]

@@ -54,7 +54,6 @@ def named_path_to_gd_item(path=''):
         pwd = os.path.dirname(pwd)
         if len(id_path) > 1:    # do not touch root
             id_path.pop()
-    print("XXX UUU once removed .. pwd=%s id_path=%s path_items=%s" % (pwd, id_path, path_items))
     path = '/'.join(path_items)
 
     # initial item is sure a folder
@@ -77,11 +76,8 @@ def named_path_to_gd_item(path=''):
 
     if not path.startswith('/'):
         final_path = os.path.join(pwd, path) if path else pwd
-        print("XXX joining from pwd %s and path %s" % (pwd, path))
     else:
         final_path = path
-    print("XXX final_path   ", final_path)
-    print("XXX final id_path", id_path)
 
     return gditem.GDItem(final_path, id_path, mime_type), ""
 

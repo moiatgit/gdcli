@@ -7,14 +7,28 @@ Currently
 
 Current problem:
 
-- there's a problem with gdpath: it returns the item id only but I'd need
+- since it is possible that more of one entry has the same name in the same folder, it is also possible that:
+
+  - there's a folder and a file equally named and the folder contains the required file. So I must search on every possible folder
+
+  - two folders equally named, one contains the required file and the other doesn't
+
+  - these cases could happen in any step in the path
+
+  For this reason, the following changes must be considered:
+
+  - recursive gdpath.named_path_to_gditem()
+
+  - gdpath.named_path_to_gditem() must return (list[GDItem], msg)
+
+  - for coherence, consider results as a dict with keys 'errorMessage' and 'items'
+
+- (done) there's a problem with gdpath: it returns the item id only but I'd need
   also whether it is a folder or not.
 
   I've created gdpath.GDItem to allow keeping this information all the time
 
-  At this moment I'm converting test_gdpath
-
-  Further tasks will involve to get pwd as a GDItem
+  (done) At this moment I'm converting test_gdpath
 
 - (done) rename path_to_gd() to named_path_to_gditem()
 
@@ -23,6 +37,11 @@ Current problem:
 - There're also two new tests to be defined. They have to do with the fact that it is possible to get two files with the same name in GD.
   It will require to decide whether to present everything, which one to keep (for mimeType decisions)
   It will also make more complex ls and make it more appealing to require ls path/to/folder/ end by slash if user wants to list folder contents
+
+- replace calls to old query methods on gdcore to the new ones (e.g. get_file() to get_items_by_name())
+  Start with test_gdpath
+
+- Further tasks will involve to get pwd as a GDItem
 
 
 

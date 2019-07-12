@@ -263,15 +263,15 @@ def test_path_slash_existent_existent_folder(monkeypatch, initial_pwd_root):
 
 def test_path_slash_existent_existent_file(monkeypatch, initial_pwd_root):
     contents = [
-        [ gditem.GDItem.folder('/folder1', ['root', 'folder1']) ],
-        [ gditem.GDItem('/folder1/file2.jpg', ['root', 'folder1', 'file2.jpg'], 'image/jpeg') ]
+        [ gditem.GDItem.folder('/folder1', ['root', 'folder1id']) ],
+        [ gditem.GDItem('/folder1/file2.jpg', ['root', 'folder1id', 'file2jpgid'], 'image/jpeg') ]
     ]
 
     fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/folder1/file2.jpg'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item =  gditem.GDItem('/folder1/file2.jpg', ['root', 'folder1', 'file2.jpg'], 'image/jpeg')
+    expected_item =  gditem.GDItem('/folder1/file2.jpg', ['root', 'folder1id', 'file2jpgid'], 'image/jpeg')
     expected_msg = ''
     assert expected_item == path_id
     assert expected_msg == error_message
@@ -291,9 +291,8 @@ def test_path_slash_existent_dot_parent(monkeypatch, initial_pwd_root):
 
 def test_path_slash_existent_nonexistent(monkeypatch, initial_pwd_root):
     contents = [
-        [ {'name': 'folder1', 'id': 'id1',
-           'mimeType': 'application/vnd.google-apps.folder'}],
-        [],
+        [gditem.GDItem.folder('/folder1', ['root', 'folder1id'])],
+        []
     ]
 
     fake_get_file = utiltests.build_mock_get(contents)
@@ -308,21 +307,37 @@ def test_path_slash_existent_nonexistent(monkeypatch, initial_pwd_root):
 
 def test_path_existent_file_as_folder(monkeypatch, initial_pwd_root):
     contents = [
-        [ {'name': 'img.jpg', 'id': 'id1',
-           'mimeType': 'image/jpeg'}],
+        [gditem.GDItem('/folder1/img.jpg', ['root', 'folder1id', 'imgjpgid'], 'image/jpeg')]
     ]
 
     fake_get_file = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
     given = '/img.jpg/anything'
     path_id, error_message = gdpath.named_path_to_gd_item(given)
-    expected_item = ''
+    expected_item = None
     expected_msg = 'not a directory: img.jpg'
     assert expected_item == path_id
     assert expected_msg == error_message
 
 
 def test_path_more_than_one_file_with_same_name_in_same_folder():
+    contents = [
+        [gditem.GDItem('/folder1/img.jpg', ['root', 'folder1id', 'imgjpgid'], 'image/jpeg')],
+        [gditem.GDItem('/folder1/img.jpg', ['root', 'folder1id', 'imgjpgid'], 'image/jpeg')]
+    ]
+    fake_get_file = utiltests.build_mock_get(contents)
+    monkeypatch.setattr(gdcore, 'get_file', fake_get_file)
+    given = '/img.jpg/anything'
+    path_id, error_message = gdpath.named_path_to_gd_item(given)
+    expected_item = None
+    expected_msg = 'not a directory: img.jpg'
+    assert expected_item == path_id
+    assert expected_msg == error_message
+
+def test_path_two_folders_with_same_name_one_with_required_file_and_the_other_without():
+    assert False
+
+def test_path_two_folders_with_same_name_both_with_required_file():
     assert False
 
 def test_path_a_file_and_a_folder_with_same_name_is_same_folder():
