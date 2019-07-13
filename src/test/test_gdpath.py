@@ -414,79 +414,105 @@ def test_path_existent_file_as_folder(monkeypatch, initial_pwd_root):
 
 
 def test_path_more_than_one_file_with_same_name_in_same_folder(monkeypatch):
-    contents = [
-        [gditem.GDItem.folder('/folder1', ['root', 'folder1id'])],
-        [gditem.GDItem('/folder1/img.jpg', ['root', 'folder1id', 'imgjpgid1'], 'image/jpeg'),
-         gditem.GDItem('/folder1/img.jpg', ['root', 'folder1id', 'imgjpgid2'], 'image/jpeg')]
-    ]
     path = '/folder1/img.jpg'
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id']
+    named_path2 = ['/', 'folder1', 'img.jpg']
+    id_path2 = ['root', 'folder1id', 'imgjpgid1']
+    id_path3 = ['root', 'folder1id', 'imgjpgid2']
+    contents = [
+        [gditem.GDItem.folder(named_path1, id_path1)],
+        [gditem.GDItem(named_path2, id_path2, 'image/jpeg'),
+         gditem.GDItem(named_path2, id_path3, 'image/jpeg')]
+    ]
     expected_items = [
-        gditem.GDItem('/folder1/img.jpg', ['root', 'folder1id', 'imgjpgid1'], 'image/jpeg'),
-        gditem.GDItem('/folder1/img.jpg', ['root', 'folder1id', 'imgjpgid2'], 'image/jpeg')
+        gditem.GDItem(named_path2, id_path2, 'image/jpeg'),
+        gditem.GDItem(named_path2, id_path3, 'image/jpeg')
     ]
     assert_expected_results(contents, path, expected_items, monkeypatch)
 
 
 def test_path_two_folders_with_same_name_one_with_required_file_and_the_other_without(monkeypatch):
+    path = '/folder1/img1.jpg'
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id1']
+    id_path2 = ['root', 'folder1id2']
+    named_path3 = ['/', 'folder1', 'img.jpg']
+    id_path3 = ['root', 'folder1id', 'imgjpgid']
     contents = [
         [
-            gditem.GDItem.folder('/folder1', ['root', 'folder1id1']),
-            gditem.GDItem.folder('/folder1', ['root', 'folder1id2']),
+            gditem.GDItem.folder(named_path1, id_path1),
+            gditem.GDItem.folder(named_path1, id_path2),
         ],
-        [gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id1', 'img1jpgid'], 'image/jpeg')],
+        [gditem.GDItem(named_path3, id_path3, 'image/jpeg')],
         [],
     ]
-    path = '/folder1/img1.jpg'
     expected_items = [
-        gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id1', 'img1jpgid'], 'image/jpeg')
+        gditem.GDItem(named_path3, id_path3, 'image/jpeg')
     ]
     assert_expected_results(contents, path, expected_items, monkeypatch)
 
 
 def test_path_two_folders_with_same_name_both_with_required_file(monkeypatch):
+    path = '/folder1/img1.jpg'
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id1']
+    id_path2 = ['root', 'folder1id2']
+    named_path3 = ['/', 'folder1', 'img.jpg']
+    id_path3 = ['root', 'folder1id1', 'imgjpgid1']
+    id_path4 = ['root', 'folder1id2', 'imgjpgid2']
     contents = [
         [
-            gditem.GDItem.folder('/folder1', ['root', 'folder1id1']),
-            gditem.GDItem.folder('/folder1', ['root', 'folder1id2']),
+            gditem.GDItem.folder(named_path1, id_path1),
+            gditem.GDItem.folder(named_path1, id_path2),
         ],
-        [gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id1', 'img1jpgid1'], 'image/jpeg')],
-        [gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id2', 'img1jpgid2'], 'image/jpeg')],
+        [gditem.GDItem(named_path3, id_path3, 'image/jpeg')],
+        [gditem.GDItem(named_path3, id_path4, 'image/jpeg')],
     ]
-    path = '/folder1/img1.jpg'
     expected_items = [
-        gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id1', 'img1jpgid1'], 'image/jpeg'),
-        gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id2', 'img1jpgid2'], 'image/jpeg')
+        gditem.GDItem(named_path3, id_path3, 'image/jpeg'),
+        gditem.GDItem(named_path3, id_path4, 'image/jpeg')
     ]
     assert_expected_results(contents, path, expected_items, monkeypatch)
 
 
 def test_path_a_file_and_a_folder_with_same_name_is_same_folder(monkeypatch):
+    path = '/folder1/theitem'
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id']
+    named_path2 = ['/', 'folder1', 'theitem']
+    id_path2 = ['root', 'folder1id', 'theitemid1']
+    id_path3 = ['root', 'folder1id', 'theitemid2']
     contents = [
-        [ gditem.GDItem.folder('/folder1', ['root', 'folder1id'])],
+        [ gditem.GDItem.folder(named_path1, id_path1)],
         [
-            gditem.GDItem('/folder1/theitem', ['root', 'folder1id', 'theitemid1'], 'image/jpeg'),
-            gditem.GDItem.folder('/folder1/theitem', ['root', 'folder1id', 'theitemid2']),
+            gditem.GDItem(named_path2, id_path2 , 'image/jpeg'),
+            gditem.GDItem.folder(named_path2, id_path3),
         ]
     ]
-    path = '/folder1/theitem'
     expected_items = [
-            gditem.GDItem('/folder1/theitem', ['root', 'folder1id', 'theitemid1'], 'image/jpeg'),
-            gditem.GDItem.folder('/folder1/theitem', ['root', 'folder1id', 'theitemid2']),
+            gditem.GDItem(named_path2, id_path2, 'image/jpeg'),
+            gditem.GDItem.folder(named_path2, id_path3),
     ]
     assert_expected_results(contents, path, expected_items, monkeypatch)
 
 
 def test_path_same_name_step_one_a_file_the_other_a_folder_containing_expected(monkeypatch):
+    path = '/theitem/img.jpg'
+    named_path1 = ['/', 'theitem']
+    id_path1 = ['root', 'theitemid1']
+    id_path2 = ['root', 'theitemid2']
+    named_path3 = ['/', 'theitem', 'img.jpg']
+    id_path3 = ['root', 'theitemid1', 'imgjpgid']
     contents = [
         [
-            gditem.GDItem('/theitem', ['root', 'theitemid1'], 'image/jpeg'),
-            gditem.GDItem.folder('/theitem', ['root', 'theitemid2']),
+            gditem.GDItem(named_path1, id_path1, 'image/jpeg'),
+            gditem.GDItem.folder(named_path1, id_path2),
         ],
-        [gditem.GDItem('/theitem/img.jpg', ['root', 'theitemid2', 'imgjpgid'], 'image/jpeg'),]
+        [gditem.GDItem(named_path3, id_path3, 'image/jpeg'),]
     ]
-    path = '/theitem/img.jpg'
     expected_items = [
-            gditem.GDItem('/theitem/img.jpg', ['root', 'theitemid2', 'imgjpgid'], 'image/jpeg'),
+            gditem.GDItem(named_path3, id_path3, 'image/jpeg'),
     ]
     assert_expected_results(contents, path, expected_items, monkeypatch)
 

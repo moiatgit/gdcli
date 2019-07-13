@@ -31,7 +31,7 @@ Current problem:
   - gdpath offers nixpath_to_gdpath() and gdpath_to_nixpath() methods
   - Session will just keep the driver by now
 
-  So you are in the branch slashing
+  (done) So you are in the branch slashing
   - on test_gdpath.test_path_slash_existent_existent_folder()
   - addaptation consists on
     - path to the beginning of the test
