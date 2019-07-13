@@ -11,7 +11,7 @@ import gditem
 @pytest.fixture()
 def initial_pwd_root(monkeypatch):
     contents = {
-        'pwd': '/',
+        'pwd': ['/',]
         'pwd_id': ['root']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
@@ -19,7 +19,7 @@ def initial_pwd_root(monkeypatch):
 @pytest.fixture()
 def initial_pwd_non_root(monkeypatch):
     contents = {
-        'pwd': '/parentfolder/currentfolder',
+        'pwd': ['/','parentfolder','currentfolder'],
         'pwd_id': ['root', 'parentfolderid', 'currentfolderid']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
