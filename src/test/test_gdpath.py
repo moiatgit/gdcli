@@ -342,3 +342,74 @@ def test_path_same_name_step_one_a_file_the_other_a_folder_containing_expected(m
     ]
     assert_expected_results(contents, path, expected_items, monkeypatch)
 
+
+# test split_nixpath()
+
+def test_split_nixpath_with_backslash():
+    nixpath = 'sla\\\\sh'
+    expected = ['sla\\sh']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_with_slash():
+    nixpath = 'sla\\/sh'
+    expected = ['sla/sh']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_root():
+    nixpath = '/'
+    expected = ['/']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_empty():
+    nixpath = ''
+    expected = ['']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_relative():
+    nixpath = 'one/two/three'
+    expected = ['one', 'two', 'three']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_aberrant():
+    nixpath = '/a/very\\/aber..rant/pat\\\\h/isn\'t it?'
+    expected = ['/', 'a', 'very/aber..rant', 'pat\\h', 'isn\'t it?']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+
+# tst normalize_splitted_path()
+
+def test_normalize_splitted_path_basic():
+    path = ['one', 'two', 'three']
+    expected = path
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_ignore_dot():
+    path = ['.', 'one', '.', 'two.', '.three', '.']
+    expected = ['one', 'two.', '.three']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_ignore_dotdot():
+    path = ['one', 'two', '..', 'three']
+    expected = ['one', 'three']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_preserve_initial_dotdot():
+    path = ['..', 'one', '..', '..', 'two', '..', '..', 'three']
+    expected = ['..', '..', '..', 'three']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_dotdot_removing_all_path():
+    path = ['one', 'two', 'three', '..', '..', '..', '..']
+    expected = ['..']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected

@@ -22,7 +22,7 @@ Current problem:
   about its original names and offer methods to avoid use of split()? The main difficulty on this approach is to manipulate
   nix paths as received by the command (e.g. ls) but you won't scape from this even with the Session mechanism fully working
 
-  The problem with slashes at nixpaths could be solved with the standard scape mechanism. i.e. '\/' is a non-path-separator slash and '\\' is a non-escape inverted slash
+  The problem with slashes at nixpaths could be solved with the standard scape mechanism. i.e. '\/' is a non-path-separator slash and '\\' is a non-escape backslash
 
   Consider defining a test case of a file with steps including slashes
 
@@ -31,12 +31,14 @@ Current problem:
   - gdpath offers nixpath_to_gdpath() and gdpath_to_nixpath() methods
   - Session will just keep the driver by now
 
+
+
 To Do List
 ==========
 
-- check whether the testing with set[GDItem] actually work
+- if the only reason to exist for Session is keeping the driver instance, consider removing it
 
-- (done) Further tasks will involve to get pwd as a GDItem
+- check whether the testing with set[GDItem] actually work
 
 - consider moving gdpath.items_from_path to gdcore
 

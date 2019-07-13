@@ -49,10 +49,6 @@ def _gdcontents_to_gditem(contents, folder):
     """ given a response of a Google Drive query, it return the list
         of GDItem contained in the 'files' entry if present
 
-        Some considerations:
-        - new names are stored at Session
-        - names are translated to its representation according to Session
-
         @param contents: a dict as return by a query to Google Driver
         @param folder: a GDItem such that folder.is_folder() == True
         @return list[GDItem]
@@ -60,9 +56,8 @@ def _gdcontents_to_gditem(contents, folder):
     items = []
     for raw_item in contents.get('files', []):
         name = raw_item['name']
-        representation = gdsession.Session.add_name(name)
         item = gditem.GDItem(
-            os.path.join(folder['namedPath'], representation),
+            os.path.join(folder['namedPath'], name),
             folder['idPath'] + [raw_item['id']],
             raw_item['mimeType'])
         items.append(item)

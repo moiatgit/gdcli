@@ -82,3 +82,67 @@ def items_from_path(path):
         return [gditem.GDItem.folder(final_path, id_path)]
 
     return _process_path_items(path_items, id_path, pwd, final_path)
+
+
+def split_nixpath(nixpath):
+    """ given a *nix-like path, it returns the list of steps.
+        It works similar to nixpath.split('/') but it:
+        - takes into account escaped slashes,
+        - keeps initial slash as a result
+
+        Basically, GD names allow virtually any character including slashes.
+        Slashes make nix-like paths go crazy
+        The adopted solution has been to allow escaping with backslash.
+        Therefore, '\/' will be translated as '/'
+                   double \ will go as single
+    """
+    # trivial path
+    if not nixpath:
+        return ['']
+
+    result = []
+
+    # absolute paths
+    if nixpath.startswith('/'):
+        nixpath = nixpath[1:]
+        result.append('/')
+
+    # rest of path
+    current_name = ''
+    while nixpath:
+        current_chr = nixpath[0]
+        nixpath = nixpath[1:]
+        if current_chr == '\\':     # it can't be the last one or OS would have complained
+            current_name += nixpath[0]
+            nixpath = nixpath[1:]
+        elif current_chr == '/':    # considered as a path delimiter
+            result.append(current_name)
+            current_name = ''
+        else:
+            current_name += current_chr
+    if current_name:
+        result.append(current_name)
+    return result
+
+
+def normalize_splitted_path(splitted_path):
+    """ given a list of steps forming a path (as result of split_nixpath() for
+        example), it
+        returns the path normalized so:
+        - steps '.' are ignored
+        - steps '..' remove previous non-'..' steps
+    """
+    # get rid of '.'
+    path = [ step for step in splitted_path if step != '.']
+
+    # get rid of '..'
+    result = []
+    while path:
+        step = path.pop(0)
+        if step == '..' and result and result[-1] != '..':
+            result.pop()
+        else:
+            result.append(step)
+    return result
+
+
