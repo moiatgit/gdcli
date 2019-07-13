@@ -11,34 +11,37 @@ import gditem
 import gdcore
 
 
-def _process_path_items(former_path_items, partial_id_path, partial_named_path, final_path):
+def _process_path_items(former_remaining_path_items, partial_id_path, partial_named_path, final_path):
     """ given a list of items to process, and the partial id_path
-        it tries to complete path_items to construct matching GDItem
+        it tries to complete remaining_path_items to construct matching GDItem
 
         @return list[GDItem]: the list of items found in GD matching the final
                               path
     """
     print("XXX _process_path_items()")
-    print("XXX\t former_path_items", former_path_items)
+    print("XXX\t former_remaining_path_items", former_remaining_path_items)
     print("XXX\t partial_id_path", partial_id_path)
     print("XXX\t partial_named_path", partial_named_path)
     print("XXX\t final_path", final_path)
     found = []
-    path_items = former_path_items[:]
-    current = path_items.pop(0)
-    print("XXXgdpath._process_path_items path_items", path_items)
+    remaining_path_items = former_remaining_path_items[:]
+    current = remaining_path_items.pop(0)
     folder = gditem.GDItem.folder(partial_named_path, partial_id_path)
+    print("XXX attempting to call API")
+    print("XXX\t current", current)
+    print("XXX\t folder", folder)
     gd_items = gdcore.get_items_by_name(current, folder=folder)
     for gdi in gd_items:
-        id_path = partial_id_path[:] + [gdi['id']]
-        if path_items:
+        print("XXX\t\t considering gdi", gdi)
+        id_path = gdi['idPath']
+        named_path = gdi['namedPath']
+        if remaining_path_items:
             if not gdi.is_folder():
                 continue
-            named_path = os.path.join(partial_named_path, gdi.full_path())
-            found += _process_path_items(path_items, id_path, named_path, final_path)
+            found += _process_path_items(remaining_path_items, id_path, named_path, final_path)
         else:
             mime_type = gdi['mimeType']
-            new_item = gditem.GDItem(final_path, id_path, mime_type)
+            new_item = gditem.GDItem(named_path, id_path, mime_type)
             found.append(new_item)
     return found
 
@@ -75,16 +78,16 @@ def items_from_path(path):
     # remove back to parent steps ../
     while pwd and remaining_items and remaining_items[0] == '..':
         remaining_items.pop(0)
-        pwd = os.path.dirname(pwd)
         if len(id_path) > 1:    # do not touch root
             id_path.pop()
+            pwd.pop()
     path = '/'.join(remaining_items)
 
     if remaining_items:
         final_path = pwd + remaining_items
         return _process_path_items(remaining_items, id_path, pwd, final_path)
     else:
-        return gditem.GDItem(pwd, id_path)
+        return [gditem.GDItem.folder(pwd, id_path)]
 
 
 def split_nixpath(nixpath):

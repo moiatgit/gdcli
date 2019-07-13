@@ -66,7 +66,7 @@ class GDItem(collections.UserDict):
             - matching length
         """
         if not isinstance(named_path, list):
-            raise TypeError(("named path must be a list[str]"
+            raise TypeError(("named path must be a list[str]. "
                             "Found %s") % named_path)
 
         assert isinstance(id_path, list), "id path must be a list[str]"

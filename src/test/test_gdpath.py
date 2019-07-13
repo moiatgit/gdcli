@@ -141,6 +141,19 @@ def test_normalize_splitted_path_slash_multiple_parent():
     found = gdpath.normalize_splitted_path(path)
     assert found == expected
 
+def test_normalize_splitted_path_dot_dotdot():
+    path = ['.', '..']
+    expected = ['..']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_slash_dot_dotdot():
+    path = ['/', '.', '..']
+    expected = ['/']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+
 # test items_from_path()
 
 def test_path_slash_when_on_root(initial_pwd_root):
