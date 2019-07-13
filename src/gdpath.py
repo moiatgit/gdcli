@@ -18,21 +18,12 @@ def _process_path_items(former_remaining_path_items, partial_id_path, partial_na
         @return list[GDItem]: the list of items found in GD matching the final
                               path
     """
-    print("XXX _process_path_items()")
-    print("XXX\t former_remaining_path_items", former_remaining_path_items)
-    print("XXX\t partial_id_path", partial_id_path)
-    print("XXX\t partial_named_path", partial_named_path)
-    print("XXX\t final_path", final_path)
     found = []
     remaining_path_items = former_remaining_path_items[:]
     current = remaining_path_items.pop(0)
     folder = gditem.GDItem.folder(partial_named_path, partial_id_path)
-    print("XXX attempting to call API")
-    print("XXX\t current", current)
-    print("XXX\t folder", folder)
     gd_items = gdcore.get_items_by_name(current, folder=folder)
     for gdi in gd_items:
-        print("XXX\t\t considering gdi", gdi)
         id_path = gdi['idPath']
         named_path = gdi['namedPath']
         if remaining_path_items:
@@ -51,7 +42,6 @@ def items_from_path(path):
         sets keys 'translationOK', 'items' and 'errorMessage'
         accordingly
     """
-    print("XXX items_from_path(path: %s)" % path)
     # trivial case: root
     if path == '/':
         return [gditem.GDItem.root()]
@@ -71,9 +61,6 @@ def items_from_path(path):
         id_path = gdcli_pwd.get_pwd_id_path()
         pwd = gdcli_pwd.get_pwd_splitted()
 
-    print("XXX\t remaining_items", remaining_items)
-    print("XXX\t id_path", id_path)
-    print("XXX\t pwd", pwd)
 
     # remove back to parent steps ../
     while pwd and remaining_items and remaining_items[0] == '..':

@@ -57,12 +57,10 @@ def _gdcontents_to_gditem(contents, folder):
     for raw_item in contents.get('files', []):
         name = raw_item['name']
         item = gditem.GDItem(
-            os.path.join(folder['namedPath'], name),
+            folder['namedPath'] + [name],
             folder['idPath'] + [raw_item['id']],
             raw_item['mimeType'])
         items.append(item)
-        print("XXX gdcore._gdcontents_to_gditem() adding item", item)
-        print("XXX\tfrom raw", raw_item)
     return items
 
 
