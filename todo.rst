@@ -22,7 +22,14 @@ Current problem:
   about its original names and offer methods to avoid use of split()? The main difficulty on this approach is to manipulate
   nix paths as received by the command (e.g. ls) but you won't scape from this even with the Session mechanism fully working
 
+  The problem with slashes at nixpaths could be solved with the standard scape mechanism. i.e. '\/' is a non-path-separator slash and '\\' is a non-escape inverted slash
+
   Consider defining a test case of a file with steps including slashes
+
+  Let's create a new branch to replace Session by this idea:
+  - GDItem.named_path as list of names (this avoids split('/') requirement on GDItem
+  - gdpath offers nixpath_to_gdpath() and gdpath_to_nixpath() methods
+  - Session will just keep the driver by now
 
 To Do List
 ==========
