@@ -22,8 +22,8 @@ class GDItem(collections.UserDict):
 
     def __init__(self, named_path, id_path, mime_type):
         """ initializes a new instance of a GD item
-            @param named_path: list of str representing the steps of an absolute and 
-                               normalized path, as resulted from a call to 
+            @param named_path: list of str representing the steps of an absolute and
+                               normalized path, as resulted from a call to
                                gdpath.normalize_splitted_path(gdpath.split_nixpath())
                    i.e. named_path must start with '/' and contain not '.' nor '..' steps.
             @param id_path: list of Google Drive ids composing the path to this item
@@ -34,8 +34,6 @@ class GDItem(collections.UserDict):
         if named_path == ['/']:
             name = '/'
             gd_id = 'root'
-            final_path = '/'
-            final_id_path = ['root']
         else:
             name = named_path[-1]
             gd_id = id_path[-1]
@@ -44,7 +42,7 @@ class GDItem(collections.UserDict):
             'name': name,
             'id': gd_id,
             'mimeType': mime_type,
-            'namedPath': named_path
+            'namedPath': named_path,
             'idPath': id_path
         }
         super().__init__(values)
@@ -67,7 +65,7 @@ class GDItem(collections.UserDict):
             - normalized (not containing relative steps: '.' nor '..')
             - matching length
         """
-        assert named_path.startswith('/'), "named path must be absolute"
+        assert named_path[0] == '/', "named path must be absolute"
         assert named_path.count('/') == 1, ("named path must contain exactly one"
                                             "'/', %s found") % named_path.count('/')
         assert id_path.count('root') == 1, ("id path must contain exactly one"
@@ -76,16 +74,15 @@ class GDItem(collections.UserDict):
         if named_path == '/':
             assert id_path == ['root'], "when named_path is /, id_path must be ['root']"
         else:
-            split_path = named_path.split('/')
-            assert len(split_path) == len(id_path), ("named and id paths lengths must match, but\n"
+            assert len(named_path) == len(id_path), ("named and id paths lengths must match, but\n"
                                                      "named path: %s (%s items)\n"
                                                      "id path   : %s (%s items)\n") % (
                                                          named_path,
-                                                         len(split_path),
+                                                         len(named_path),
                                                          id_path,
                                                          len(id_path))
-            assert '.' not in split_path, "named path shouldn't contain a step '.'"
-            assert '..' not in split_path, "named path shouldn't contain a step '..'"
+            assert '.' not in named_path, "named path shouldn't contain a step '.'"
+            assert '..' not in named_path, "named path shouldn't contain a step '..'"
 
 
     def is_folder(self):

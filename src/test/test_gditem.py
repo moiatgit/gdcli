@@ -13,7 +13,7 @@ import pytest
 import gditem
 
 def test_init_root():
-    named_path = '/'
+    named_path = ['/']
     id_path = ['root']
     mime_type =  'application/vnd.google-apps.folder'
     item = gditem.GDItem(named_path, id_path, mime_type)
@@ -21,7 +21,7 @@ def test_init_root():
     assert item['name'] == '/'
     assert item['id'] == 'root'
     assert item['mimeType'] == 'application/vnd.google-apps.folder'
-    assert item['namedPath'] == '/'
+    assert item['namedPath'] == ['/']
     assert item['idPath'] == ['root']
     assert item.is_root()
     assert item.is_folder()
@@ -37,7 +37,7 @@ def test_method_root():
     assert item.is_folder()
 
 def test_proper_item_folder():
-    named_path = '/a/proper/path'
+    named_path = ['/', 'a', 'proper', 'path']
     id_path = ['root', 'aid', 'properid', 'pathid']
     mime_type =  'application/vnd.google-apps.folder'
     item = gditem.GDItem(named_path, id_path, mime_type)
@@ -45,27 +45,26 @@ def test_proper_item_folder():
     assert item['name'] == 'path'
     assert item['id'] == 'pathid'
     assert item['mimeType'] == 'application/vnd.google-apps.folder'
-    assert item['namedPath'] == '/a/proper'
-    assert item['idPath'] == ['root', 'aid', 'properid']
+    assert item['namedPath'] == named_path
+    assert item['idPath'] == id_path
     assert not item.is_root()
     assert item.is_folder()
 
 def test_proper_method_folder():
-    named_path = '/a/proper/path'
+    named_path = ['/', 'a', 'proper', 'path']
     id_path = ['root', 'aid', 'properid', 'pathid']
     item = gditem.GDItem.folder(named_path, id_path)
-
     assert item['name'] == 'path'
     assert item['id'] == 'pathid'
     assert item['mimeType'] == 'application/vnd.google-apps.folder'
-    assert item['namedPath'] == '/a/proper'
-    assert item['idPath'] == ['root', 'aid', 'properid']
+    assert item['namedPath'] == named_path
+    assert item['idPath'] == id_path
     assert not item.is_root()
     assert item.is_folder()
 
 
 def test_proper_item_file():
-    named_path = '/a/proper/file.jpg'
+    named_path = ['/', 'a', 'proper', 'file.jpg']
     id_path = ['root', 'aid', 'properid', 'fileid']
     mime_type =  'application/img.jpeg'
     item = gditem.GDItem(named_path, id_path, mime_type)
@@ -73,28 +72,28 @@ def test_proper_item_file():
     assert item['name'] == 'file.jpg'
     assert item['id'] == 'fileid'
     assert item['mimeType'] == 'application/img.jpeg'
-    assert item['namedPath'] == '/a/proper'
-    assert item['idPath'] == ['root', 'aid', 'properid']
+    assert item['namedPath'] == named_path
+    assert item['idPath'] == id_path
     assert not item.is_root()
     assert not item.is_folder()
 
 def test_non_absolute_path():
-    named_path = 'a/relative/path'
+    named_path = ['a', 'relative', 'path']
     id_path = ['aid', 'relativeid', 'pathid']
     mime_type =  'application/vnd.google-apps.folder'
     with pytest.raises(AssertionError):
         gditem.GDItem(named_path, id_path, mime_type)
 
 def test_non_normalitze_path_with_dot():
-    named_path = '/a/./relative/path'
-    id_path = ['root', 'aid', '?', 'relativeid', 'pathid']
+    named_path = ['/', 'a', '.', 'path']
+    id_path = ['root', 'aid', 'dotid', 'pathid']
     mime_type =  'application/vnd.google-apps.folder'
     with pytest.raises(AssertionError):
         gditem.GDItem(named_path, id_path, mime_type)
 
 def test_non_normalitze_path_with_parent():
-    named_path = '/a/../relative/path'
-    id_path = ['root', 'aid', '?', 'relativeid', 'pathid']
+    named_path = ['/', 'a', '..', 'path']
+    id_path = ['root', 'aid', 'dotdotid', 'pathid']
     mime_type =  'application/vnd.google-apps.folder'
     with pytest.raises(AssertionError):
         gditem.GDItem(named_path, id_path, mime_type)
