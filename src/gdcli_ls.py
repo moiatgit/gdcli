@@ -24,13 +24,13 @@ def item_to_str(item):
 
 def print_items(folder, files):
     """ pretty prints the files """
-    print("\nfolder: ", end='')
+    print("\npath: ", end='')
     if folder == '.':
         print(gdcli_pwd.get_pwd())
     else:
         print(folder)
     for item in files:
-        print('\t%s' % item_to_str(item))
+        print('  %s' % item_to_str(item))
     print('total files: %s' % len(files))
 
 

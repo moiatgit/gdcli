@@ -7,6 +7,7 @@
 import os
 from oauth2client import file, client, tools
 from googleapiclient.discovery import build
+from urllib.parse import quote
 
 import gdconstants
 import gdconfig
@@ -90,7 +91,8 @@ def get_items_by_name(name, folder):
         @return list[GDItem]
     """
     parent = folder['id']
-    query = "name='%s' and '%s' in parents and trashed=false" % (name, parent)
+    sanitized_name = quote(name)
+    query = "name='%s' and '%s' in parents and trashed=false" % (sanitized_name, parent)
     return _get_items(query, folder)
 
 

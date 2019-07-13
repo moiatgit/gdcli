@@ -7,7 +7,9 @@ Currently
 
 Current problem:
 
-- names in GD can contain / so it doesn't work when trying to split by slash
+This problem is solved!
+
+- (done) names in GD can contain / so it doesn't work when trying to split by slash
   proposal 1: store all item names in a list and use paths with its position
               session names
 
@@ -26,7 +28,7 @@ Current problem:
 
   Consider defining a test case of a file with steps including slashes
 
-  Let's create a new branch to replace Session by this idea:
+  (done) Let's create a new branch to replace Session by this idea:
   - GDItem.named_path as list of names (this avoids split('/') requirement on GDItem
   - gdpath offers nixpath_to_gdpath() and gdpath_to_nixpath() methods
   - Session will just keep the driver by now
