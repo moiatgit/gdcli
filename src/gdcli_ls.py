@@ -7,72 +7,57 @@
 """
 
 import sys
-import json
+import os
 
 import gdcore
 import gdpath
-from gdconstants import print_warning
+import gdcli_pwd
 
 
-_MIMETYPE_TO_EXTENSION_MAPPINGS = {
-    'application/msword': 'msword',
-    'application/pdf': 'pdf',
-    'application/vnd.google-apps.document': 'document',
-    'application/vnd.google-apps.folder': 'folder',
-    'application/vnd.google-apps.form': 'form',
-    'application/vnd.google-apps.spreadsheet': 'spreadsheet',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'gmldocument',
-    'image/jpeg': 'jpeg',
-}
+def item_to_str(item):
+    """ returns a printable representation of the GDItem """
+    full_path = item.full_path()
+    if item.is_folder():
+        return os.path.join(full_path, '')
+    return full_path
 
 
-def print_file(filespec):
-    """ pretty prints the file spec """
-    if 'fileExtension' in filespec:
-        extension = ''
-    else:
-        extension = '{.%s}' % _MIMETYPE_TO_EXTENSION_MAPPINGS.get(filespec['mimeType'], 'unknown')
-    size = '%s bytes' % filespec['size'] if 'size' in filespec else ''
-    print('%s%s %s' % (filespec['name'], extension, size))
-
-
-def print_files(files):
+def print_items(folder, files):
     """ pretty prints the files """
-    print('Google Driver CLI: ls')
+    print("\npath: ", end='')
+    if folder == '.':
+        print(gdcli_pwd.get_pwd())
+    else:
+        print(folder)
     for item in files:
-        print_file(item)
-    print('\ntotal files: %s' % len(files))
+        print('  %s' % item_to_str(item))
+    print('total files: %s' % len(files))
 
 
 def get_files(path):
     """ gets the files in the corresponding path.
-        If path is a file, it will return just one file if exists.
+        If path corresponds to a folder, it will return its contents.
         @param path: the path to the files to be listed
-        @return: a tuple:
-            items found: the list of items found matching requirements if no error
-            error message: the error message if any
+        @return: a list[GDItem] the list of items found matching requirements
         """
-    item_id, error_msg = gdpath.path_to_gd(path)
-    if error_msg:
-        return ([], error_msg)
-    files = gdcore.get_list(item_id)
-    if files:
-        return (files, '')
-    error_msg = 'No files found for %s' % path
-    return ([], error_msg)
-
+    found = []
+    items = gdpath.items_from_path(path)
+    for item in items:
+        if item.is_folder():
+            found += gdcore.get_items_by_folder(item)
+        else:
+            found.append(item)
+    return found
 
 def do_ls(argv):
     """ lists contents in Google Driver
         @param argv: a list of str arguments """
     if not argv:
         argv = ['.']
-    for item in argv:
-        files, error_msg = get_files(item)
-        if error_msg:
-            print_warning(error_msg)
-            continue
-        print_files(files)
+    print('Google Driver CLI: ls')
+    for arg in argv:
+        items = get_files(arg)
+        print_items(arg, items)
 
 
 def main():

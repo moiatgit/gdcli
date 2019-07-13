@@ -5,10 +5,37 @@ ToDo List
 Currently
 =========
 
+Current problem:
+
+- sanitizing the names before querying API doesn't work for special names (e.g. those containing whitespaces)
+
+  The clue to this problem could come from sniffing what's actually being requested to the API
+  and decide the kind of sanitization to use
 
 
 To Do List
 ==========
+
+- if the only reason to exist for Session is keeping the driver instance, consider removing it
+
+- check whether the testing with set[GDItem] actually work
+
+- consider moving gdpath.items_from_path to gdcore
+
+- important optimization
+
+  currently, each time gdcli access to GD, it requires authentication!
+  (done) Change it to a singleton or something so it can share the same driver during all the process life!
+  Test it!
+
+- gdcli_ls consider moving _MIMETYPE_TO_EXTENSION_MAPPINGS to a configuration file so it can get updated without reprogramming
+
+- gditem.proper_paths() should conform to other checkings in the standard library
+  for example, list.join() calls to _check_arg_types() that, on error,
+    raise TypeError('named path must be absolute')
+  Get sure you test it at test_gditem
+
+- consider moving fixtures from test_gdpath and test_gdcli_ls to utiltest
 
 - ls has some issues:
 
@@ -20,7 +47,9 @@ To Do List
 
   - it shows the type even for the known file extensions. e.g. file.pdf{.pdf}
 
-  - it shows the title of the script for each passed argument
+  - (done) it shows the title of the script for each passed argument
+
+  - it breaks when a missing file is required
 
 - gdcore get_list() and get_file() do practically the same. Refactor!
 
@@ -49,6 +78,13 @@ To Do List
 - create the hub gdcli.py that allows arguments for the different utilities
   (e.g. gdcli_ls.py mydir -> $ gdcli ls mydir)
 
+- consider adding cache features
+
+  i.e. store the folder struct and even the GD files' info, so you can reach them directly
+
+  An option --non-cache could force any command to access directly to GD
+
+  A command refresh or clear_cache could refresh/clear cache info
 
 - other commands:
 
@@ -71,7 +107,48 @@ To Do List
 - robustness: there's a problem in gdconfig. It could break if a non
   jsonable value is added to a key. Check the XXX in the file
 
-- add color to the output (e.g. {.folder} could appear in a different color when ls
+
+- consider adding type info when ls
+    if item['mimeType'] == 'msword' and not (
+        item['name'].tolower().endswith('doc') or
+            item['name'].tolower().endswith('docx')
+    ):
+        return full_path + '{.doc}'
+
+    _MIMETYPE_TO_EXTENSION_MAPPINGS = {
+        'application/msword': 'msword',
+        'application/pdf': 'pdf',
+        'image/jpeg': 'jpeg',
+
+        'application/vnd.google-apps.audio': 'audio',
+        'application/vnd.google-apps.document': 'Google Docs',
+        'application/vnd.google-apps.drawing': 'Google Drawing',
+        'application/vnd.google-apps.file': 'Google Drive file',
+        'application/vnd.google-apps.folder': 'Google Drive folder',
+        'application/vnd.google-apps.form': 'Google Forms',
+        'application/vnd.google-apps.fusiontable': 'Google Fusion Tables',
+        'application/vnd.google-apps.map': 'Google My Maps',
+        'application/vnd.google-apps.photo': 'Google photo',
+        'application/vnd.google-apps.presentation': 'Google Slides',
+        'application/vnd.google-apps.script': 'Google Apps Scripts',
+        'application/vnd.google-apps.site': 'Google Sites',
+        'application/vnd.google-apps.spreadsheet': 'Google Sheets',
+        'application/vnd.google-apps.unknown': 'unknown',
+        'application/vnd.google-apps.video': 'Google Video',
+        'application/vnd.google-apps.drive-sdk': 'Google 3rd party shortcut',
+    }
+
+    def test_print_item_when_known_extension():
+        item = gditem.GDItem('/one/itemname', ['root', 'oneid', 'itemnameid'],
+                             'application/pdf')
+        expected = '/one/itemname{.pdf}'
+        got = gdcli_ls.item_to_str(item)
+        assert got == expected
+
+
+- add color to the output (e.g. {.doc} could appear in a different color when ls
+
+- consider if gdconstants is a proper name for a bunch of constants PLUS some utilitiy methods
 
 Future
 ======

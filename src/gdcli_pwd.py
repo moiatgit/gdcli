@@ -10,15 +10,28 @@
 import sys
 
 import gdstatus
+import gditem
+
+def get_pwd_splitted():
+    """ returns the current working directory as a list of steps """
+    return gdstatus.get_status()['pwd']
 
 def get_pwd():
     """ returns the current working directory """
-    pwd_path = gdstatus.get_status()['pwd']
-    return "/".join(pwd_path) if len(pwd_path) > 1 else '/'
+    return "/" + "/".join(gdstatus.get_status()['pwd'][1:])
 
 def get_pwd_id():
     """ returns the current working directory id """
     return gdstatus.get_status()['pwd_id'][-1]
+
+def get_pwd_id_path():
+    """ returns the current working directory path as a list of id"""
+    return gdstatus.get_status()['pwd_id']
+
+def get_pwd_gditem():
+    """ returns the current working directory as a GDItem """
+    status = gdstatus.get_status()
+    return gditem.GDItem.folder(status['pwd'], status['pwd_id'])
 
 def do_pwd(argv):
     """ shows the current working directory to the standard output
