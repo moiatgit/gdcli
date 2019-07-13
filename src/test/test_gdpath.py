@@ -353,46 +353,63 @@ def test_path_parent_replacing_folder_in_path(monkeypatch, initial_pwd_non_root)
 
 
 def test_path_slash_existent_existent_folder(monkeypatch, initial_pwd_root):
-    contents = [
-        [ gditem.GDItem.folder('/folder1', ['root', 'folder1id'])],
-        [ gditem.GDItem.folder('/folder1/folder2', ['root', 'folder1id', 'folder2id'])],
-    ]
     path = '/folder1/folder2'
-    expected_item = gditem.GDItem.folder('/folder1/folder2', ['root', 'folder1id', 'folder2id'])
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id']
+    named_path2 = ['/', 'folder1', 'folder2']
+    id_path2 = ['root', 'folder1id', 'folder2id']
+    contents = [
+        [ gditem.GDItem.folder(named_path1, id_path1)],
+        [ gditem.GDItem.folder(named_path2, id_path2)],
+    ]
+    expected_item = gditem.GDItem.folder(named_path2, id_path2)
     assert_expected_results(contents, path, [expected_item], monkeypatch)
 
 
 def test_path_slash_existent_existent_file(monkeypatch, initial_pwd_root):
-    contents = [
-        [ gditem.GDItem.folder('/folder1', ['root', 'folder1id']) ],
-        [ gditem.GDItem('/folder1/file2.jpg', ['root', 'folder1id', 'file2jpgid'], 'image/jpeg') ]
-    ]
     path = '/folder1/file2.jpg'
-    expected_item =  gditem.GDItem('/folder1/file2.jpg', ['root', 'folder1id', 'file2jpgid'], 'image/jpeg')
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id']
+    named_path2 = ['/', 'folder1', 'file2.jpg']
+    id_path2 = ['root', 'folder1id', 'file2jpgid']
+    contents = [
+        [ gditem.GDItem.folder(named_path1, id_path1)],
+        [ gditem.GDItem.folder(named_path2, id_path2)],
+    ]
+
+    contents = [
+        [ gditem.GDItem.folder(named_path1, id_path1) ],
+        [ gditem.GDItem(named_path2, id_path2, 'image/jpeg') ]
+    ]
+    expected_item =  gditem.GDItem(named_path2, id_path2, 'image/jpeg')
     assert_expected_results(contents, path, [expected_item], monkeypatch)
 
 
 def test_path_slash_existent_dot_parent(monkeypatch, initial_pwd_root):
-    contents = []
     path = '/folder1/./..'
+    contents = []
     expected_item = gditem.GDItem.root()
     assert_expected_results(contents, path, [expected_item], monkeypatch)
 
 
 def test_path_slash_existent_nonexistent(monkeypatch, initial_pwd_root):
+    path = '/folder1/nonexistentfile'
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id']
     contents = [
-        [gditem.GDItem.folder('/folder1', ['root', 'folder1id'])],
+        [gditem.GDItem.folder(named_path1, id_path1)],
         []
     ]
-    path = '/folder1/nonexistentfile'
     assert_expected_results(contents, path, [], monkeypatch)
 
 
 def test_path_existent_file_as_folder(monkeypatch, initial_pwd_root):
-    contents = [
-        [gditem.GDItem('/folder1/img.jpg', ['root', 'folder1id', 'imgjpgid'], 'image/jpeg')]
-    ]
     path = '/img.jpg/anything'
+    named_path2 = ['/', 'folder1', 'file2.jpg']
+    id_path2 = ['root', 'folder1id', 'file2jpgid']
+    contents = [
+        [ gditem.GDItem(named_path2, id_path2, 'image/jpeg') ]
+    ]
     assert_expected_results(contents, path, [], monkeypatch)
 
 
