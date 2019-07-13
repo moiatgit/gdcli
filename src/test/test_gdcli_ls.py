@@ -20,7 +20,7 @@ import utiltests
 @pytest.fixture()
 def initial_pwd_root(monkeypatch):
     contents = {
-        'pwd': '/',
+        'pwd': ['/'],
         'pwd_id': ['root']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
@@ -44,15 +44,19 @@ def initial_pwd(monkeypatch):
 
 def test_ls_absolute_path_root(monkeypatch, initial_pwd_root):
     path = '/'
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id']
+    named_path2 = ['/', 'folder2']
+    id_path2 = ['root', 'folder2id']
     contents_by_folder = [
         [
-            gditem.GDItem.folder('/folder1', ['root', 'folder1id']),
-            gditem.GDItem.folder('/folder2', ['root', 'folder2id']),
+            gditem.GDItem.folder(named_path1, id_path1),
+            gditem.GDItem.folder(named_path2, id_path2),
         ]
     ]
     expected_items = [
-            gditem.GDItem.folder('/folder1', ['root', 'folder1id']),
-            gditem.GDItem.folder('/folder2', ['root', 'folder2id']),
+            gditem.GDItem.folder(named_path1, id_path1),
+            gditem.GDItem.folder(named_path2, id_path2),
     ]
     fake_get_items_by_folder = utiltests.build_mock_get(contents_by_folder)
     monkeypatch.setattr(gdcore, 'get_items_by_folder', fake_get_items_by_folder)
@@ -62,11 +66,13 @@ def test_ls_absolute_path_root(monkeypatch, initial_pwd_root):
 
 def test_ls_absolute_path_to_non_folder_file(monkeypatch, initial_pwd_root):
     path = '/img.jpg'
+    named_path1 = ['/', 'img.jpg']
+    id_path1 = ['root', 'imgjpgid']
     contents_by_name = [
-        [gditem.GDItem('/img.jpg', ['root', 'imgjpgid'], 'image/jpeg')]
+        [gditem.GDItem(named_path1, id_path1, 'image/jpeg')]
     ]
     expected_items = [
-        gditem.GDItem('/img.jpg', ['root', 'imgjpgid'], 'image/jpeg')
+        gditem.GDItem(named_path1, id_path1, 'image/jpeg')
     ]
     fake_get_items_by_name = utiltests.build_mock_get(contents_by_name)
     monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
@@ -76,16 +82,22 @@ def test_ls_absolute_path_to_non_folder_file(monkeypatch, initial_pwd_root):
 
 def test_ls_path_to_folder(monkeypatch, initial_pwd_root):
     path = 'folder1'
+    named_path1 = ['/', 'folder1']
+    id_path1 = ['root', 'folder1id']
+    named_path2 = ['/', 'folder1', 'img.jpg']
+    id_path2 = ['root', 'folder1id', 'imgjpgid1']
+    named_path3 = ['/', 'folder1', 'folder2']
+    id_path3 = ['root', 'folder1id', 'folder2id']
     contents_by_name = [
-        [ gditem.GDItem.folder('/folder1', ['root', 'folder1id'])],
+        [ gditem.GDItem.folder(named_path1, id_path1)],
     ]
     contents_by_folder = [
-        [ gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id', 'img1jpgid'], 'image/jpeg'),
-          gditem.GDItem.folder('/folder1/folder2', ['root', 'folder1id', 'folder2id'])]
+        [ gditem.GDItem(named_path2, id_path2, 'image/jpeg'),
+          gditem.GDItem.folder(named_path3, id_path3)]
     ]
     expected_items = [
-        gditem.GDItem('/folder1/img1.jpg', ['root', 'folder1id', 'img1jpgid'], 'image/jpeg'),
-        gditem.GDItem.folder('/folder1/folder2', ['root', 'folder1id', 'folder2id'])
+        gditem.GDItem(named_path2, id_path2, 'image/jpeg'),
+        gditem.GDItem.folder(named_path3, id_path3)
     ]
     fake_get_items_by_name = utiltests.build_mock_get(contents_by_name)
     fake_get_items_by_folder = utiltests.build_mock_get(contents_by_folder)
@@ -97,20 +109,28 @@ def test_ls_path_to_folder(monkeypatch, initial_pwd_root):
 
 def test_ls_folder_and_file_with_same_name(monkeypatch, initial_pwd_root):
     path = 'theitem'
+    named_path1 = ['/', 'theitem']
+    id_path1 = ['root', 'theitemid1']
+    id_path2 = ['root', 'theitemid2']
+
+    named_path3 = ['/', 'theitem', 'img1.jpg']
+    id_path3 = ['root', 'theitemid1', 'img1jpgid']
+    named_path4 = ['/', 'theitem', 'folder2']
+    id_path4 = ['root', 'theitemid1', 'folder2id']
     contents_by_name = [
         [
-            gditem.GDItem.folder('/theitem', ['root', 'theitemid1']),
-            gditem.GDItem('/theitem', ['root', 'theitemid2'], 'image/jpeg')
+            gditem.GDItem.folder(named_path1, id_path1),
+            gditem.GDItem(named_path1, id_path2, 'image/jpeg')
         ],
     ]
     contents_by_folder = [
-        [ gditem.GDItem('/theitem/img1.jpg', ['root', 'theitemid1', 'img1jpgid'], 'image/jpeg'),
-          gditem.GDItem.folder('/theitem/folder2', ['root', 'theitemid1', 'folder2id'])]
+        [ gditem.GDItem(named_path3, id_path3, 'image/jpeg'),
+          gditem.GDItem.folder(named_path4, id_path4)]
     ]
     expected_items = [
-        gditem.GDItem('/theitem', ['root', 'theitemid2'], 'image/jpeg'),
-        gditem.GDItem('/theitem/img1.jpg', ['root', 'theitemid1', 'img1jpgid'], 'image/jpeg'),
-        gditem.GDItem.folder('/theitem/folder2', ['root', 'theitemid1', 'folder2id'])
+        gditem.GDItem(named_path1, id_path2, 'image/jpeg'),
+        gditem.GDItem(named_path3, id_path3, 'image/jpeg'),
+        gditem.GDItem.folder(named_path4, id_path4)
     ]
     fake_get_items_by_name = utiltests.build_mock_get(contents_by_name)
     fake_get_items_by_folder = utiltests.build_mock_get(contents_by_folder)
@@ -122,19 +142,26 @@ def test_ls_folder_and_file_with_same_name(monkeypatch, initial_pwd_root):
 
 def test_ls_two_folders_with_same_name(monkeypatch, initial_pwd_root):
     path = 'thefolder'
+    named_path1 = ['/', 'theitem']
+    id_path1 = ['root', 'theitemid1']
+    id_path2 = ['root', 'theitemid2']
+    named_path3 = ['/', 'theitem', 'img1.jpg']
+    id_path3 = ['root', 'theitemid1', 'img1jpgid']
+    named_path4 = ['/', 'theitem', 'img2.jpg']
+    id_path4 = ['root', 'theitemid2', 'img2jpgid']
     contents_by_name = [
         [
-            gditem.GDItem.folder('/theitem', ['root', 'theitemid1']),
-            gditem.GDItem.folder('/theitem', ['root', 'theitemid2']),
+            gditem.GDItem.folder(named_path1, id_path1),
+            gditem.GDItem.folder(named_path1, id_path2),
         ],
     ]
     contents_by_folder = [
-        [ gditem.GDItem('/theitem/img1.jpg', ['root', 'theitemid1', 'img1jpgid'], 'image/jpeg')],
-        [ gditem.GDItem('/theitem/img2.jpg', ['root', 'theitemid2', 'img2jpgid'], 'image/jpeg')],
+        [gditem.GDItem(named_path3, id_path3, 'image/jpeg')],
+        [gditem.GDItem(named_path4, id_path4, 'image/jpeg')],
     ]
     expected_items = [
-        gditem.GDItem('/theitem/img1.jpg', ['root', 'theitemid1', 'img1jpgid'], 'image/jpeg'),
-        gditem.GDItem('/theitem/img2.jpg', ['root', 'theitemid2', 'img2jpgid'], 'image/jpeg'),
+        gditem.GDItem(named_path3, id_path3, 'image/jpeg'),
+        gditem.GDItem(named_path4, id_path4, 'image/jpeg'),
     ]
     fake_get_items_by_name = utiltests.build_mock_get(contents_by_name)
     fake_get_items_by_folder = utiltests.build_mock_get(contents_by_folder)
@@ -143,17 +170,19 @@ def test_ls_two_folders_with_same_name(monkeypatch, initial_pwd_root):
     items = gdcli_ls.get_files(path)
     assert set(items) == set(expected_items)
 
-# XXX to be reviewed: they probably require Session to be mocked
-#def test_print_item_when_folder():
-#    item = gditem.GDItem.folder('/one/folder', ['root', 'oneid', 'folderid'])
-#    expected = '/one/folder/'
-#    got = gdcli_ls.item_to_str(item)
-#    assert got == expected
-#
-#def test_print_item_when_unknown_type():
-#    item = gditem.GDItem('/one/itemname', ['root', 'oneid', 'itemnameid'],
-#                         'application/vnd.google-apps.unknown')
-#    expected = '/one/itemname'
-#    got = gdcli_ls.item_to_str(item)
-#    assert got == expected
+def test_print_item_when_folder():
+    named_path = ['/', 'one', 'folder']
+    id_path = ['root', 'oneid', 'folderid']
+    item = gditem.GDItem.folder(named_path, id_path)
+    expected = '/one/folder/'
+    got = gdcli_ls.item_to_str(item)
+    assert got == expected
+
+def test_print_item_when_unknown_type():
+    named_path = ['/', 'one', 'item']
+    id_path = ['root', 'oneid', 'itemid']
+    item = gditem.GDItem(named_path, id_path, 'application/vnd.google-apps.unknown')
+    expected = '/one/itemname'
+    got = gdcli_ls.item_to_str(item)
+    assert got == expected
 

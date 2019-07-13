@@ -105,4 +105,4 @@ class GDItem(collections.UserDict):
 
     def __hash__(self):
         """ the hash of a GDItem is the hash of its namedPath and name """
-        return hash(os.path.join(self['namedPath'], self['name']))
+        return hash('/'.join(self['namedPath']))
