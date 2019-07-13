@@ -16,38 +16,36 @@ class GDItem(collections.UserDict):
         - name: item name
         - id:   item id at GD
         - mimeType: mime type as GD reported
-        - named_path: str with the absolute path (by default '/')
+        - named_path: list[str] with the absolute path (by default ['/'])
         - id_path: list of ids of folders to reach the item (first is always 'root')
     """
 
     def __init__(self, named_path, id_path, mime_type):
         """ initializes a new instance of a GD item
-            @param named_path: str *nix like absolute and normalized path to this item
+            @param named_path: list of str representing the steps of an absolute and 
+                               normalized path, as resulted from a call to 
+                               gdpath.normalize_splitted_path(gdpath.split_nixpath())
                    i.e. named_path must start with '/' and contain not '.' nor '..' steps.
             @param id_path: list of Google Drive ids composing the path to this item
             @param mime_type: mime type of the item
         """
         GDItem.proper_paths(named_path, id_path)
 
-        if named_path == '/':
+        if named_path == ['/']:
             name = '/'
             gd_id = 'root'
             final_path = '/'
             final_id_path = ['root']
         else:
-            split_path = named_path.split('/')
-            name = split_path.pop()
+            name = named_path[-1]
             gd_id = id_path[-1]
-            final_path = '/'.join(split_path)
-            final_id_path = id_path[:-1]
-
 
         values = {
             'name': name,
             'id': gd_id,
             'mimeType': mime_type,
-            'namedPath': final_path if final_path else '/',
-            'idPath': final_id_path
+            'namedPath': named_path
+            'idPath': id_path
         }
         super().__init__(values)
 
@@ -64,11 +62,16 @@ class GDItem(collections.UserDict):
     @staticmethod
     def proper_paths(named_path, id_path):
         """ returns True when both paths are well defined:
-            - absolute (start with root)
-            - normalized (not containing relative stepss: ',' nor '..')
+            - absolute (start with / and root respectively)
+            - root just once (contain only / and root respectively)
+            - normalized (not containing relative steps: '.' nor '..')
             - matching length
         """
         assert named_path.startswith('/'), "named path must be absolute"
+        assert named_path.count('/') == 1, ("named path must contain exactly one"
+                                            "'/', %s found") % named_path.count('/')
+        assert id_path.count('root') == 1, ("id path must contain exactly one"
+                                            "'root', %s found") % id_path.count('/')
         assert id_path[0] == 'root', "id_path must start with root"
         if named_path == '/':
             assert id_path == ['root'], "when named_path is /, id_path must be ['root']"

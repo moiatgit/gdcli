@@ -43,19 +43,17 @@ def items_from_path(path):
         sets keys 'translationOK', 'items' and 'errorMessage'
         accordingly
     """
-    print("XXX gdpath.items_from_path(path: %s)" % path)
-    path = os.path.normpath(path)
+    path_items = normalize_splitted_path(split_nixpath(path))
 
     # trivial cases
-    if path == '/':
+    if path_items == ['/']:
         return [gditem.GDItem.root()]
 
-    if path == '.':
+    if path_items == ['']:
         return [gdcli_pwd.get_pwd_gditem()]
 
     # absolute or relative
-    path_items = path.split('/')
-    if path.startswith('/'):
+    if path_items.startswith('/'):
         id_path = ['root']
         path_items.pop(0)   # get rid of root
     else:

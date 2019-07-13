@@ -83,18 +83,32 @@ def test_non_absolute_path():
     id_path = ['aid', 'relativeid', 'pathid']
     mime_type =  'application/vnd.google-apps.folder'
     with pytest.raises(AssertionError):
-        item = gditem.GDItem(named_path, id_path, mime_type)
+        gditem.GDItem(named_path, id_path, mime_type)
 
 def test_non_normalitze_path_with_dot():
     named_path = '/a/./relative/path'
     id_path = ['root', 'aid', '?', 'relativeid', 'pathid']
     mime_type =  'application/vnd.google-apps.folder'
     with pytest.raises(AssertionError):
-        item = gditem.GDItem(named_path, id_path, mime_type)
+        gditem.GDItem(named_path, id_path, mime_type)
 
 def test_non_normalitze_path_with_parent():
     named_path = '/a/../relative/path'
     id_path = ['root', 'aid', '?', 'relativeid', 'pathid']
     mime_type =  'application/vnd.google-apps.folder'
     with pytest.raises(AssertionError):
-        item = gditem.GDItem(named_path, id_path, mime_type)
+        gditem.GDItem(named_path, id_path, mime_type)
+
+def test_named_path_with_two_root():
+    named_path = ['/', 'one', '/', 'two']
+    id_path = ['root', 'oneid', 'root2', 'two']
+    mime_type =  'application/vnd.google-apps.folder'
+    with pytest.raises(AssertionError):
+        gditem.GDItem(named_path, id_path, mime_type)
+
+def test_named_path_with_two_root():
+    named_path = ['/', 'one', '/thisisvalid!', 'two']
+    id_path = ['root', 'oneid', 'root', 'two']
+    mime_type =  'application/vnd.google-apps.folder'
+    with pytest.raises(AssertionError):
+        gditem.GDItem(named_path, id_path, mime_type)
