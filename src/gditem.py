@@ -50,7 +50,7 @@ class GDItem(collections.UserDict):
     @staticmethod
     def root():
         """ returns a GDItem corresponding to the root element """
-        return GDItem('/', ['root'], gdconstants.FOLDER_MIME_TYPE)
+        return GDItem(['/'], ['root'], gdconstants.FOLDER_MIME_TYPE)
 
     @staticmethod
     def folder(named_path, id_path):
@@ -65,6 +65,12 @@ class GDItem(collections.UserDict):
             - normalized (not containing relative steps: '.' nor '..')
             - matching length
         """
+        if not isinstance(named_path, list):
+            raise TypeError(("named path must be a list[str]"
+                            "Found %s") % named_path)
+
+        assert isinstance(id_path, list), "id path must be a list[str]"
+
         assert named_path[0] == '/', "named path must be absolute"
         assert named_path.count('/') == 1, ("named path must contain exactly one"
                                             "'/', %s found") % named_path.count('/')
@@ -95,7 +101,7 @@ class GDItem(collections.UserDict):
 
     def full_path(self):
         """ returns the full path to the item, including its name """
-        return os.path.join(self['namedPath'], self['name'])
+        return '/'.join(self['namedPath'])
 
     def __hash__(self):
         """ the hash of a GDItem is the hash of its namedPath and name """

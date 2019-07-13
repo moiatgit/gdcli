@@ -9,9 +9,10 @@ from gdconstants import _STATUS_FILENAME_EXPANDED, print_error_and_exit
 import gdconfig
 
 def get_status():
-    """ tryies to get the status file and loads it as a GDConfig
+    """ tries to get the status file and loads it as a GDConfig
         If the status file is not present, it creates one with default
         information.
+        @return dict like object containing status info
     """
 
     def create_status_file_if_necessary():
@@ -21,7 +22,7 @@ def get_status():
 
     def add_pwd_if_necessary(status):
         if not 'pwd' in status or not 'pwd_id' in status:
-            status['pwd'] = ['']
+            status['pwd'] = ['/']
             status['pwd_id'] = ['root']
             status.store()
 

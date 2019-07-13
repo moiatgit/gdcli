@@ -132,13 +132,23 @@ def normalize_splitted_path(splitted_path):
     """
     # get rid of '.'
     path = [ step for step in splitted_path if step != '.']
+    if not path:
+        return ['']
 
     # get rid of '..'
     result = []
     while path:
         step = path.pop(0)
-        if step == '..' and result and result[-1] != '..':
-            result.pop()
+        if step == '..':
+            if result:
+                if result[-1] == '/':
+                    pass        # do not remove root
+                elif result[-1] == '..':
+                    result.append(step)
+                else:
+                    result.pop()
+            else:
+                result.append(step)
         else:
             result.append(step)
     return result

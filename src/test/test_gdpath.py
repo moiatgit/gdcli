@@ -15,7 +15,7 @@ import utiltests
 @pytest.fixture()
 def initial_pwd_root(monkeypatch):
     contents = {
-        'pwd': '/',
+        'pwd': ['/'],
         'pwd_id': ['root']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
@@ -23,11 +23,10 @@ def initial_pwd_root(monkeypatch):
 @pytest.fixture()
 def initial_pwd_non_root(monkeypatch):
     contents = {
-        'pwd':     '/folder_a/folder_b/folder_c',
+        'pwd':    ['/', 'folder_a', 'folder_b', 'folder_c'],
         'pwd_id': ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id']
     }
     monkeypatch.setattr(gdstatus, 'get_status', lambda: contents)
-
 
 def assert_expected_results(contents, path, expected_items, monkeypatch):
     """ given the contents to be return by the GD API and
@@ -42,7 +41,107 @@ def assert_expected_results(contents, path, expected_items, monkeypatch):
     assert items == expected_items
 
 
-# actual tests
+# test split_nixpath()
+
+def test_split_nixpath_with_backslash():
+    nixpath = 'sla\\\\sh'
+    expected = ['sla\\sh']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_with_slash():
+    nixpath = 'sla\\/sh'
+    expected = ['sla/sh']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_root():
+    nixpath = '/'
+    expected = ['/']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_empty():
+    nixpath = ''
+    expected = ['']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_relative():
+    nixpath = 'one/two/three'
+    expected = ['one', 'two', 'three']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_aberrant():
+    nixpath = '/a/very\\/aber..rant/pat\\\\h/isn\'t it?'
+    expected = ['/', 'a', 'very/aber..rant', 'pat\\h', 'isn\'t it?']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+def test_split_nixpath_slash_parent():
+    nixpath = '/..'
+    expected = ['/', '..']
+    found = gdpath.split_nixpath(nixpath)
+    assert found == expected
+
+# tst normalize_splitted_path()
+
+def test_normalize_splitted_path_basic():
+    path = ['one', 'two', 'three']
+    expected = path
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_ignore_dot():
+    path = ['.', 'one', '.', 'two.', '.three', '.']
+    expected = ['one', 'two.', '.three']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_ignore_dotdot():
+    path = ['one', 'two', '..', 'three']
+    expected = ['one', 'three']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_preserve_initial_dotdot():
+    path = ['..', 'one', '..', '..', 'two', '..', '..', 'three']
+    expected = ['..', '..', '..', 'three']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_dotdot_removing_all_path():
+    path = ['one', 'two', 'three', '..', '..', '..', '..']
+    expected = ['..']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_only_one_dot():
+    path = ['.']
+    expected = ['']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_only_dots():
+    path = ['.', '.', '.', '.', '.', '.']
+    expected = ['']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_slash_parent():
+    path = ['/', '..']
+    expected = ['/']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+def test_normalize_splitted_path_slash_multiple_parent():
+    path = ['/', '..', '..', '..']
+    expected = ['/']
+    found = gdpath.normalize_splitted_path(path)
+    assert found == expected
+
+# test items_from_path()
 
 def test_path_slash_when_on_root(initial_pwd_root):
     path = '/'
@@ -72,47 +171,43 @@ def test_path_non_existing(monkeypatch, initial_pwd_root):
 
 
 def test_path_dot_non_existing(monkeypatch, initial_pwd_root):
+    path = '/nonexistentfile'
     contents = [[]]
     fake_get_items_by_name = utiltests.build_mock_get(contents,
                                              expected_args=('nonexistentfile',),
                                              expected_kwargs={'folder': gditem.GDItem.root()})
     monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
-    path = '/nonexistentfile'
     items = gdpath.items_from_path(path)
     assert not items
 
 
 def test_path_slash_existent_folder_from_root(monkeypatch, initial_pwd_root):
-    contents = [
-        [gditem.GDItem.folder('/folder1', ['root', 'folder1id'])]
-    ]
+    path = '/folder1'
+    named_path = ['/', 'folder1']
+    id_path = ['root', 'folder1id']
+    contents = [[gditem.GDItem.folder(named_path, id_path)]]
     fake_get_items_by_name = utiltests.build_mock_get(contents)
     monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
-    path = '/folder1'
-    expected_item = gditem.GDItem.folder('/folder1', ['root', 'folder1id'])
+    expected_item = gditem.GDItem.folder(['/', 'folder1'], ['root', 'folder1id'])
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
 
 
 def test_path_dot_existent_folder_from_root(monkeypatch, initial_pwd_non_root):
-    contents = [[
-        gditem.GDItem.folder('/folder_a/folder_b/folder_c/folder1',
-                             ['root', 'folder_a_id', 'folder_b_id',
-                              'folder_c_id', 'folder1id'])]]
     path = './folder1'
-    expected_item = gditem.GDItem.folder(
-        '/folder_a/folder_b/folder_c/folder1',
-        ['root', 'folder_a_id', 'folder_b_id',
-         'folder_c_id', 'folder1id']
-    )
+    named_path = ['/','folder_a','folder_b','folder_c','folder1']
+    id_path = ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id', 'folder1id']
+    contents = [[gditem.GDItem.folder(named_path, id_path)]]
+    expected_item = gditem.GDItem.folder( named_path, id_path)
     assert_expected_results(contents, path, [expected_item], monkeypatch)
 
 
 def test_path_dot(initial_pwd_non_root):
     path = '.'
-    expected_item = gditem.GDItem.folder('/folder_a/folder_b/folder_c',
-                                         ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id'])
+    named_path = ['/', 'folder_a','folder_b','folder_c']
+    id_path = ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id']
+    expected_item = gditem.GDItem.folder(named_path, id_path)
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
@@ -120,8 +215,9 @@ def test_path_dot(initial_pwd_non_root):
 
 def test_path_dot_slash(initial_pwd_non_root):
     path = './'
-    expected_item = gditem.GDItem.folder('/folder_a/folder_b/folder_c',
-                                         ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id'])
+    named_path = ['/', 'folder_a','folder_b','folder_c']
+    id_path = ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id']
+    expected_item = gditem.GDItem.folder(named_path, id_path)
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
@@ -129,8 +225,9 @@ def test_path_dot_slash(initial_pwd_non_root):
 
 def test_path_dot_slash_repeated(initial_pwd_non_root):
     path = '././././.'
-    expected_item = gditem.GDItem.folder('/folder_a/folder_b/folder_c',
-                                         ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id'])
+    named_path = ['/', 'folder_a','folder_b','folder_c']
+    id_path = ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id']
+    expected_item = gditem.GDItem.folder(named_path, id_path)
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
@@ -138,8 +235,9 @@ def test_path_dot_slash_repeated(initial_pwd_non_root):
 
 def test_path_parent(initial_pwd_non_root):
     path = '..'
-    expected_item = gditem.GDItem.folder('/folder_a/folder_b',
-                                         ['root', 'folder_a_id', 'folder_b_id'])
+    named_path = ['/', 'folder_a','folder_b']
+    id_path = ['root', 'folder_a_id', 'folder_b_id']
+    expected_item = gditem.GDItem.folder(named_path, id_path)
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
@@ -147,8 +245,9 @@ def test_path_parent(initial_pwd_non_root):
 
 def test_path_parent_slash(initial_pwd_non_root):
     path = '../'
-    expected_item = gditem.GDItem.folder('/folder_a/folder_b',
-                                         ['root', 'folder_a_id', 'folder_b_id'])
+    named_path = ['/', 'folder_a','folder_b']
+    id_path = ['root', 'folder_a_id', 'folder_b_id']
+    expected_item = gditem.GDItem.folder(named_path, id_path)
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
@@ -156,8 +255,9 @@ def test_path_parent_slash(initial_pwd_non_root):
 
 def test_path_parent_parent(initial_pwd_non_root):
     path = '../..'
-    expected_item = gditem.GDItem.folder('/folder_a',
-                                         ['root', 'folder_a_id'])
+    named_path = ['/', 'folder_a']
+    id_path = ['root', 'folder_a_id']
+    expected_item = gditem.GDItem.folder(named_path, id_path)
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
@@ -165,7 +265,7 @@ def test_path_parent_parent(initial_pwd_non_root):
 
 def test_path_too_much_parents(initial_pwd_non_root):
     path = '../../../../..'
-    expected_item = gditem.GDItem.folder('/', ['root',])
+    expected_item = gditem.GDItem.root()
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
@@ -181,26 +281,24 @@ def test_path_slash_parent(initial_pwd_non_root):
 
 def test_path_mixing_parents_and_dots(initial_pwd_non_root):
     path = './.././../.'
-    expected_item = gditem.GDItem.folder('/folder_a',
-                                         ['root', 'folder_a_id'])
+    named_path = ['/', 'folder_a']
+    id_path = ['root', 'folder_a_id']
+    expected_item = gditem.GDItem.folder(named_path, id_path)
     items = gdpath.items_from_path(path)
     assert len(items) == 1
     assert items[0] == expected_item
 
 
 def test_path_parent_replacing_folder_in_pwd(monkeypatch, initial_pwd_non_root):
-    contents = [
-        [gditem.GDItem.folder('/folder_a/folder_b/newfolder',
-                             ['root', 'folder_a_id', 'folder_b_id', 'newfolder_id'])],
-        [gditem.GDItem.folder('/folder_a/folder_b/newfolder/folder1',
-                             ['root', 'folder_a_id', 'folder_b_id',
-                              'newfolder_id', 'folder1id'])]]
     path = './../newfolder/folder1'
-    expected_item = gditem.GDItem.folder(
-        '/folder_a/folder_b/newfolder/folder1',
-        ['root', 'folder_a_id', 'folder_b_id',
-         'newfolder_id', 'folder1id']
-    )
+    named_path1 = ['/', 'folder_a', 'folder_b', 'newfolder']
+    id_path1 = ['root', 'folder_a_id', 'folder_b_id', 'newfolder_id']
+    named_path2 = ['/', 'folder_a', 'folder_b', 'newfolder', 'folder1']
+    id_path2 = ['root', 'folder_a_id', 'folder_b_id', 'newfolder_id', 'folder1id']
+    contents = [
+        [gditem.GDItem.folder(named_path1, id_path1)],
+        [gditem.GDItem.folder(named_path2, id_path2)]]
+    expected_item = gditem.GDItem.folder(named_path2, id_path2)
     assert_expected_results(contents, path, [expected_item], monkeypatch)
 
 
@@ -343,73 +441,3 @@ def test_path_same_name_step_one_a_file_the_other_a_folder_containing_expected(m
     assert_expected_results(contents, path, expected_items, monkeypatch)
 
 
-# test split_nixpath()
-
-def test_split_nixpath_with_backslash():
-    nixpath = 'sla\\\\sh'
-    expected = ['sla\\sh']
-    found = gdpath.split_nixpath(nixpath)
-    assert found == expected
-
-def test_split_nixpath_with_slash():
-    nixpath = 'sla\\/sh'
-    expected = ['sla/sh']
-    found = gdpath.split_nixpath(nixpath)
-    assert found == expected
-
-def test_split_nixpath_root():
-    nixpath = '/'
-    expected = ['/']
-    found = gdpath.split_nixpath(nixpath)
-    assert found == expected
-
-def test_split_nixpath_empty():
-    nixpath = ''
-    expected = ['']
-    found = gdpath.split_nixpath(nixpath)
-    assert found == expected
-
-def test_split_nixpath_relative():
-    nixpath = 'one/two/three'
-    expected = ['one', 'two', 'three']
-    found = gdpath.split_nixpath(nixpath)
-    assert found == expected
-
-def test_split_nixpath_aberrant():
-    nixpath = '/a/very\\/aber..rant/pat\\\\h/isn\'t it?'
-    expected = ['/', 'a', 'very/aber..rant', 'pat\\h', 'isn\'t it?']
-    found = gdpath.split_nixpath(nixpath)
-    assert found == expected
-
-
-# tst normalize_splitted_path()
-
-def test_normalize_splitted_path_basic():
-    path = ['one', 'two', 'three']
-    expected = path
-    found = gdpath.normalize_splitted_path(path)
-    assert found == expected
-
-def test_normalize_splitted_path_ignore_dot():
-    path = ['.', 'one', '.', 'two.', '.three', '.']
-    expected = ['one', 'two.', '.three']
-    found = gdpath.normalize_splitted_path(path)
-    assert found == expected
-
-def test_normalize_splitted_path_ignore_dotdot():
-    path = ['one', 'two', '..', 'three']
-    expected = ['one', 'three']
-    found = gdpath.normalize_splitted_path(path)
-    assert found == expected
-
-def test_normalize_splitted_path_preserve_initial_dotdot():
-    path = ['..', 'one', '..', '..', 'two', '..', '..', 'three']
-    expected = ['..', '..', '..', 'three']
-    found = gdpath.normalize_splitted_path(path)
-    assert found == expected
-
-def test_normalize_splitted_path_dotdot_removing_all_path():
-    path = ['one', 'two', 'three', '..', '..', '..', '..']
-    expected = ['..']
-    found = gdpath.normalize_splitted_path(path)
-    assert found == expected

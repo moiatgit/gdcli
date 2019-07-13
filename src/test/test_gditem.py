@@ -31,7 +31,7 @@ def test_method_root():
     assert item['name'] == '/'
     assert item['id'] == 'root'
     assert item['mimeType'] == 'application/vnd.google-apps.folder'
-    assert item['namedPath'] == '/'
+    assert item['namedPath'] == ['/']
     assert item['idPath'] == ['root']
     assert item.is_root()
     assert item.is_folder()

@@ -12,9 +12,13 @@ import sys
 import gdstatus
 import gditem
 
+def get_pwd_splitted():
+    """ returns the current working directory as a list of steps """
+    return gdstatus.get_status()['pwd']
+
 def get_pwd():
     """ returns the current working directory """
-    return gdstatus.get_status()['pwd']
+    return "/" + "/".join(gdstatus.get_status()['pwd'][1:])
 
 def get_pwd_id():
     """ returns the current working directory id """
