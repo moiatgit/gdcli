@@ -159,18 +159,42 @@ def test_path_slash_when_not_on_root(initial_pwd_non_root):
     assert items[0] == expected_item
 
 
-def test_path_non_existing(monkeypatch, initial_pwd_root):
+def test_path_non_existing_relative_item_from_root(monkeypatch, initial_pwd_root):
+    path = 'nonexistentfile'
     contents = [[]]
     fake_get_items_by_name = utiltests.build_mock_get(contents,
                                              expected_args=('nonexistentfile',),
                                              expected_kwargs={'folder': gditem.GDItem.root()})
     monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
-    path = 'nonexistentfile'
     items = gdpath.items_from_path(path)
     assert not items
 
 
-def test_path_dot_non_existing(monkeypatch, initial_pwd_root):
+def test_path_non_existing_absolute_item_from_root(monkeypatch, initial_pwd_root):
+    path = '/nonexistentfile'
+    contents = [[]]
+    fake_get_items_by_name = utiltests.build_mock_get(contents,
+                                             expected_args=('nonexistentfile',),
+                                             expected_kwargs={'folder': gditem.GDItem.root()})
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
+    items = gdpath.items_from_path(path)
+    assert not items
+
+def test_path_non_existing_relative_item_from_non_root(monkeypatch, initial_pwd_non_root):
+    path = 'nonexistentfile'
+    contents = [[]]
+    named_path = ['/', 'folder_a', 'folder_b', 'folder_c']
+    id_path = ['root', 'folder_a_id', 'folder_b_id', 'folder_c_id']
+    expected_folder = gditem.GDItem.folder(named_path, id_path)
+    fake_get_items_by_name = utiltests.build_mock_get(contents,
+                                             expected_args=('nonexistentfile',),
+                                             expected_kwargs={'folder': expected_folder})
+    monkeypatch.setattr(gdcore, 'get_items_by_name', fake_get_items_by_name)
+    items = gdpath.items_from_path(path)
+    assert not items
+
+
+def test_path_non_existing_absolute_item_from_non_root(monkeypatch, initial_pwd_non_root):
     path = '/nonexistentfile'
     contents = [[]]
     fake_get_items_by_name = utiltests.build_mock_get(contents,

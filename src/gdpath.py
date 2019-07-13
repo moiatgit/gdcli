@@ -18,6 +18,11 @@ def _process_path_items(former_path_items, partial_id_path, partial_named_path, 
         @return list[GDItem]: the list of items found in GD matching the final
                               path
     """
+    print("XXX _process_path_items()")
+    print("XXX\t former_path_items", former_path_items)
+    print("XXX\t partial_id_path", partial_id_path)
+    print("XXX\t partial_named_path", partial_named_path)
+    print("XXX\t final_path", final_path)
     found = []
     path_items = former_path_items[:]
     current = path_items.pop(0)
@@ -43,43 +48,43 @@ def items_from_path(path):
         sets keys 'translationOK', 'items' and 'errorMessage'
         accordingly
     """
-    path_items = normalize_splitted_path(split_nixpath(path))
-
-    # trivial cases
-    if path_items == ['/']:
+    print("XXX items_from_path(path: %s)" % path)
+    # trivial case: root
+    if path == '/':
         return [gditem.GDItem.root()]
 
-    if path_items == ['']:
+    remaining_items = normalize_splitted_path(split_nixpath(path))
+
+    # trivial case: pwd
+    if remaining_items == ['']:
         return [gdcli_pwd.get_pwd_gditem()]
 
     # absolute or relative
-    if path_items.startswith('/'):
+    if path.startswith('/'):
         id_path = ['root']
-        path_items.pop(0)   # get rid of root
+        pwd = ['/']
+        remaining_items.pop(0)   # get rid of root
     else:
         id_path = gdcli_pwd.get_pwd_id_path()
+        pwd = gdcli_pwd.get_pwd_splitted()
 
-    pwd = gdcli_pwd.get_pwd()
+    print("XXX\t remaining_items", remaining_items)
+    print("XXX\t id_path", id_path)
+    print("XXX\t pwd", pwd)
 
     # remove back to parent steps ../
-    while pwd and path_items and path_items[0] == '..':
-        path_items.pop(0)
+    while pwd and remaining_items and remaining_items[0] == '..':
+        remaining_items.pop(0)
         pwd = os.path.dirname(pwd)
         if len(id_path) > 1:    # do not touch root
             id_path.pop()
-    path = '/'.join(path_items)
+    path = '/'.join(remaining_items)
 
-    # correct final path from pwd
-    if not path.startswith('/'):
-        final_path = os.path.join(pwd, path) if path else pwd
+    if remaining_items:
+        final_path = pwd + remaining_items
+        return _process_path_items(remaining_items, id_path, pwd, final_path)
     else:
-        final_path = path
-
-    # trivial case: it was a list of ../
-    if not path_items:
-        return [gditem.GDItem.folder(final_path, id_path)]
-
-    return _process_path_items(path_items, id_path, pwd, final_path)
+        return gditem.GDItem(pwd, id_path)
 
 
 def split_nixpath(nixpath):
