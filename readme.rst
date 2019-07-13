@@ -88,6 +88,12 @@ Get the contents of a folder in your Google Drive:
 
     total files: 3
 
+Current version is able to accept multiple and complex paths as arguments of
+this command.
+
+There's a known issue, however: when querying for names with special characters,
+it doesn't get the expected response.
+
 License
 =======
 
