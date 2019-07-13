@@ -7,41 +7,10 @@ Currently
 
 Current problem:
 
-This problem is solved!
+- sanitizing the names before querying API doesn't work for special names (e.g. those containing whitespaces)
 
-- (done) names in GD can contain / so it doesn't work when trying to split by slash
-  proposal 1: store all item names in a list and use paths with its position
-              session names
-
-  gdcore._gdcontents_to_gditem() seems to not generate GDItem with full path.
-  It must be created a test_gdcore mocking the API calls. In fact, they're already encapsulated in just one
-  method gdcore._get_items() so you just have to mock this one. Get sure you check the args of the call
-  so they correspond to the expected query and folder
-
-  Currently it is required to mock Session
-
-  Just thinking: Session is getting too complex to test. Wouldn't it be possible that GDItem contains all the information
-  about its original names and offer methods to avoid use of split()? The main difficulty on this approach is to manipulate
-  nix paths as received by the command (e.g. ls) but you won't scape from this even with the Session mechanism fully working
-
-  The problem with slashes at nixpaths could be solved with the standard scape mechanism. i.e. '\/' is a non-path-separator slash and '\\' is a non-escape backslash
-
-  Consider defining a test case of a file with steps including slashes
-
-  (done) Let's create a new branch to replace Session by this idea:
-  - GDItem.named_path as list of names (this avoids split('/') requirement on GDItem
-  - gdpath offers nixpath_to_gdpath() and gdpath_to_nixpath() methods
-  - Session will just keep the driver by now
-
-  (done) So you are in the branch slashing
-  - on test_gdpath.test_path_slash_existent_existent_folder()
-  - addaptation consists on
-    - path to the beginning of the test
-    - extract named_path and id_path from contents so you can reuse them in expected
-    - named_path are now a list
-
-  - once passed all the tests, merge with taller branch and consider removing slashing
-
+  The clue to this problem could come from sniffing what's actually being requested to the API
+  and decide the kind of sanitization to use
 
 
 To Do List
