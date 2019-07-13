@@ -340,19 +340,15 @@ def test_path_parent_replacing_folder_in_pwd(monkeypatch, initial_pwd_non_root):
 
 
 def test_path_parent_replacing_folder_in_path(monkeypatch, initial_pwd_non_root):
-    contents = [
-        [gditem.GDItem.folder('/folder_a/folder_b/newfolder',
-                             ['root', 'folder_a_id', 'folder_b_id',
-                              'newfolder_id'])],
-        [gditem.GDItem.folder('/folder_a/folder_b/newfolder/folder1',
-                             ['root', 'folder_a_id', 'folder_b_id',
-                              'newfolder_id', 'folder1id'])]]
     path = './forgetfolder/.././../newfolder/folder1'
-    expected_item = gditem.GDItem.folder(
-        '/folder_a/folder_b/newfolder/folder1',
-        ['root', 'folder_a_id', 'folder_b_id',
-         'newfolder_id', 'folder1id']
-    )
+    named_path1 = ['/', 'folder_a', 'folder_b', 'newfolder']
+    id_path1 = ['root', 'folder_a_id', 'folder_b_id', 'newfolder_id']
+    named_path2 = ['/', 'folder_a', 'folder_b', 'newfolder', 'folder1']
+    id_path2 = ['root', 'folder_a_id', 'folder_b_id', 'newfolder_id', 'folder1id']
+    contents = [
+        [gditem.GDItem.folder(named_path1, id_path1)],
+        [gditem.GDItem.folder(named_path2, id_path2)]]
+    expected_item = gditem.GDItem.folder(named_path2, id_path2)
     assert_expected_results(contents, path, [expected_item], monkeypatch)
 
 
