@@ -10,21 +10,24 @@ Current problem:
 - names in GD can contain / so it doesn't work when trying to split by slash
   proposal 1: store all item names in a list and use paths with its position
               session names
-  proposal 2: sanitize names
-              unfortunately GD names can contain any character (not checked)
-              let's try first the prev proposal
-  proposal 3: use os.path.dirname -> maybe not so efficient but it doesn't require any text manipulation
-              it doesn't work since you need to enclose names within quotes
-
-  Now: I'm trying proposal 1
 
   gdcore._gdcontents_to_gditem() seems to not generate GDItem with full path.
   It must be created a test_gdcore mocking the API calls. In fact, they're already encapsulated in just one
   method gdcore._get_items() so you just have to mock this one. Get sure you check the args of the call
   so they correspond to the expected query and folder
 
+  Currently it is required to mock Session
+
+  Just thinking: Session is getting too complex to test. Wouldn't it be possible that GDItem contains all the information
+  about its original names and offer methods to avoid use of split()? The main difficulty on this approach is to manipulate
+  nix paths as received by the command (e.g. ls) but you won't scape from this even with the Session mechanism fully working
+
+  Consider defining a test case of a file with steps including slashes
+
 To Do List
 ==========
+
+- check whether the testing with set[GDItem] actually work
 
 - (done) Further tasks will involve to get pwd as a GDItem
 

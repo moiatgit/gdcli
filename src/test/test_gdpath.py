@@ -1,7 +1,6 @@
 """
     Testing of gdpath utilities
     This module is expected to be run by pytest
-
 """
 import pytest
 import gdcore

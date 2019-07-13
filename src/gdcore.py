@@ -71,15 +71,22 @@ def _gdcontents_to_gditem(contents, folder):
     return items
 
 
-def _get_items(query, folder):
-    """ it returns the contents mathing the query as a list of GDItem """
+def _get_raw_items(query):
+    """ it returns the contents mathing the query as returned by the API """
     fields = 'files(id,name,mimeType)'
     result = get_driver().files().list(
         q=query,
         spaces='drive',
         fields=fields
     ).execute()
-    return _gdcontents_to_gditem(result, folder)
+    return result
+
+
+def _get_items(query, folder):
+    """ returns the contents matching the query as a list of GDItem """
+    raw_items = _get_raw_items(query)
+    return _gdcontents_to_gditem(raw_items, folder)
+
 
 def get_items_by_name(name, folder):
     """ it returns the contents from folder with the given name.
