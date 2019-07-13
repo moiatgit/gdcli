@@ -111,3 +111,16 @@ def test_named_path_with_two_root():
     mime_type =  'application/vnd.google-apps.folder'
     with pytest.raises(AssertionError):
         gditem.GDItem(named_path, id_path, mime_type)
+
+
+def test_full_path_when_root():
+    item = gditem.GDItem.root()
+    expected = '/'
+    got = item.full_path()
+    assert got == expected
+
+def test_full_path_when_non_root():
+    item = gditem.GDItem.folder(['/', 'folder'], ['root', 'folderid'])
+    expected = '/folder'
+    got = item.full_path()
+    assert got == expected

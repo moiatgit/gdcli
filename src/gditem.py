@@ -101,7 +101,7 @@ class GDItem(collections.UserDict):
 
     def full_path(self):
         """ returns the full path to the item, including its name """
-        return '/'.join(self['namedPath'])
+        return '/' + '/'.join(self['namedPath'][1:])
 
     def __hash__(self):
         """ the hash of a GDItem is the hash of its namedPath and name """

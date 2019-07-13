@@ -182,7 +182,7 @@ def test_print_item_when_unknown_type():
     named_path = ['/', 'one', 'item']
     id_path = ['root', 'oneid', 'itemid']
     item = gditem.GDItem(named_path, id_path, 'application/vnd.google-apps.unknown')
-    expected = '/one/itemname'
+    expected = '/one/item'
     got = gdcli_ls.item_to_str(item)
     assert got == expected
 

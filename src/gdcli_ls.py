@@ -16,9 +16,10 @@ import gdcli_pwd
 
 def item_to_str(item):
     """ returns a printable representation of the GDItem """
+    full_path = item.full_path()
     if item.is_folder():
         return os.path.join(full_path, '')
-    return item.full_path()
+    return full_path
 
 
 def print_items(folder, files):
