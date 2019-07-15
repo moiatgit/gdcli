@@ -7,14 +7,49 @@ Currently
 
 Current problem:
 
-- sanitizing the names before querying API doesn't work for special names (e.g. those containing whitespaces)
+- queries with names containing special characters (including whitespaces) are
+  not working.
 
-  The clue to this problem could come from sniffing what's actually being requested to the API
-  and decide the kind of sanitization to use
+  Trying to sanitize them didn't work. The proposed solution is to get the
+  contents of each folder and select the names from the client side.
+
+  This try would go quite close to the cache feature. Therefore, it will be
+  tackled next
+
+  steps:
+
+  - remove sanitization: it is not required and adds unnecessary noise
+
+  - create gdcache.py that is able to get a cache of the GD struct
+
+    - it can be some sort of hierarchical structure of GDItem 
+
+    - gdcore calls to API should come always (or mostly) from gdcache
+
+    - gdcache should deliver the information to its users so they don't require
+      to access directly to gdcore nor know whether the required information was
+      cached or fresh
+
+    - since gdcache could become the authentic core of the app, it would be
+      reasonable to rename it as gdcore. Current gdcore could be renamed as
+      gdapi.
+
+  - update gditem, gdpath so they work using gdcache
+
+
 
 
 To Do List
 ==========
+
+- consider adding cache features
+
+  i.e. store the folder struct and even the GD files' info, so you can reach them directly
+
+  An option --non-cache could force any command to access directly to GD
+
+  A command refresh or clear_cache could refresh/clear cache info
+
 
 - if the only reason to exist for Session is keeping the driver instance, consider removing it
 
@@ -54,13 +89,7 @@ To Do List
 - create the hub gdcli.py that allows arguments for the different utilities
   (e.g. gdcli_ls.py mydir -> $ gdcli ls mydir)
 
-- consider adding cache features
-
-  i.e. store the folder struct and even the GD files' info, so you can reach them directly
-
-  An option --non-cache could force any command to access directly to GD
-
-  A command refresh or clear_cache could refresh/clear cache info
+  Consider naming the hub as gd for simplicity
 
 - other commands:
 
@@ -82,6 +111,7 @@ To Do List
 
 - robustness: there's a problem in gdconfig. It could break if a non
   jsonable value is added to a key. Check the XXX in the file
+
 
 
 - consider adding type info when ls
