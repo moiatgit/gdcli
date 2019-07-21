@@ -16,75 +16,78 @@ Current problem:
   This try would go quite close to the cache feature. Therefore, it will be
   tackled next
 
+  Cache will be implemented as a sort of filesystem (GDFS.GDFilesystem) that
+  will be able to keep a representation of the known GD structure.
+
+  gdfs will offer the functionality currently at gdapi. Everytime a query
+  requires something still out of cache, it will query the API and store the
+  new information.
+
+  It won't store fisical files. Future download will go by another path
+
+  It won't offer explicit adding of files. Future uploads will go by another
+  path
+
+  GDItems that are folders optionally presenting keys 'subfolders' and
+  'regularContents'
+
+
   steps:
 
-  - remove sanitization: it is not required and adds unnecessary noise
+  - (done) create gdfs.py that is able to get a cache of the GD struct
 
-  - create gdcache.py that is able to get a cache of the GD struct
+  - (done) Some sort of hierarchical structure of GDItem 
 
-    - it can be some sort of hierarchical structure of GDItem 
+  - turn FS into a singleton: you can use gdsession to keep the only copy as
+    in gdapi
 
-    - gdcore calls to API should come always (or mostly) from gdcache
+  - gdapi calls to API should come always (or mostly) from gdfs
 
-    - gdcache should deliver the information to its users so they don't require
-      to access directly to gdcore nor know whether the required information was
-      cached or fresh
+  - gdfs should deliver the information to its users so they don't require
+    to access directly to gdapi nor know whether the required information was
+    cached or fresh
 
-    - since gdcache could become the authentic core of the app, it would be
-      reasonable to rename it as gdcore. Current gdcore could be renamed as
-      gdapi.
+  - gdfs must allow clearing cache or/and optional params in its operations to
+    get fresh values
 
-  - update gditem, gdpath so they work using gdcache
+    An option --non-cache could force any command to access directly to GD
 
+    A command refresh or clear_cache could refresh/clear cache info
 
+  - review gditem's new operations to be tested!
 
+  - update gditem, gdpath so they work using gdfs
 
 To Do List
 ==========
 
-- consider adding cache features
-
-  i.e. store the folder struct and even the GD files' info, so you can reach them directly
-
-  An option --non-cache could force any command to access directly to GD
-
-  A command refresh or clear_cache could refresh/clear cache info
-
-
-- if the only reason to exist for Session is keeping the driver instance, consider removing it
-
-- check whether the testing with set[GDItem] actually work
-
-- consider moving gdpath.items_from_path to gdcore
-
-- gditem.proper_paths() should conform to other checkings in the standard library
-  for example, list.join() calls to _check_arg_types() that, on error,
-    raise TypeError('named path must be absolute')
-  Get sure you test it at test_gditem
-
-  Currently there's an example of how to raise a TypeError exception in this
-  method
+- consider moving gdpath.items_from_path to gdfs
 
 - consider moving fixtures from test_gdpath and test_gdcli_ls to utiltest
 
-- ls has some issues:
+- gdcli_about is using directly the GD driver. All API queries should be
+  encapsulated in a single module (i.e. gdapi.py)
 
-  - it is unable to find items with special characters (including whitespaces)
-
-- improve gdcli_cd.py
+- complete gdcli_cd.py
 
   it should be able to change the status values (and store them!)
 
 - add version notice (e.g. gdcli v0.1) it could go in a settings file or
   similar
 
-- working on gdcli_ls.py
+- improve gdcli_ls.py
 
   - add arguments that allow
 
-    - regex (or at least *) to path
+    - regex (or at least * ) to path
+
+      xpath could be also an option
+
+      at least consider // notation for searching in any subfolder
 
     - information to be shown: i.e. name, extension and size
+
+      it could be perfomed by another command (e.g. gdcli_info)
 
 - create the hub gdcli.py that allows arguments for the different utilities
   (e.g. gdcli_ls.py mydir -> $ gdcli ls mydir)
@@ -101,6 +104,8 @@ To Do List
 
     Special case: the file is already downloaded
 
+    There're a bunch of things to take into account here: formats (save as), update, …
+
   - rename (strictly changing the name of a file)
 
   - move (move a file from one folder to another)
@@ -109,10 +114,21 @@ To Do List
 
   - upload (upload a file from local filesystem)
 
+    Similar issues of download with formats (upload as) and possible problems
+    with multiple folders
+
+  - mkdir (create a new folder)
+
 - robustness: there's a problem in gdconfig. It could break if a non
   jsonable value is added to a key. Check the XXX in the file
 
+- consider coverall or any other tool to check coverage
 
+  - https://coveralls.io/sign-up
+
+- consider implementing singleton as metaclasses
+
+  https://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
 
 - consider adding type info when ls
     if item['mimeType'] == 'msword' and not (

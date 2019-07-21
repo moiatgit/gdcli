@@ -94,6 +94,23 @@ this command.
 There's a known issue, however: when querying for names with special characters,
 it doesn't get the expected response.
 
+Contribute
+==========
+
+So you find this project interesting enough to expend some time on it? That's great!
+
+Since I'm the only developer here (AFAIK) I'm not investing too much in breaking
+the remaining tasks into assignable pieces. However, there's the file
+``todo.rst`` that contains the list of To Do. I'm trying to keep it reasonably
+updated, so you can fork this repo, pick up one of the tasks in the list (not
+prefixed by ``(done)``) and do your best! I think, though, that it would be more
+productive if you just drop me an email and we talk about it first.
+
+I'm developing on local branches, so the master contains something acceptably
+stable.
+
+Thanks for your interest!
+
 License
 =======
 
